@@ -1,25 +1,1984 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modish Enterprises — Play & Win</title>
-  <style>
-    body, html { 
-      margin: 0; 
-      padding: 0; 
-      width: 100%; 
-      height: 100%; 
-      overflow: hidden; 
-    }
-    iframe { 
-      width: 100%; 
-      height: 100%; 
-      border: none; 
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Modish Enterprises — Scan. Play. Win Discounts!</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Outfit:wght@200..900&display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+<style>
+  ::-webkit-scrollbar { width: 0; }
+  * { -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --brand-purple: #2b82ad;
+    --brand-pink: #68bfd4;
+    --brand-orange: #efaa73;
+    --brand-cyan: #4aa9c3;
+    --brand-green: #4ba988;
+    --brand-yellow: #d7a53b;
+    --wood-dark: #3b2118;
+    --wood-mid: #7a4a2d;
+    --wood-light: #b98257;
+    --wood-highlight: #e8c8aa;
+    --wood-grain: #5d3423;
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    background: #f7fbfc;
+    color: #173f57;
+  }
+  .font-display { font-family: 'Bricolage Grotesque', sans-serif; }
+
+  /* ===== Animated Gradient Background ===== */
+  .animated-bg {
+    background: linear-gradient(-45deg, #e9f6f9, #f5eee8, #ccebf3, #e6f3ed, #dceff5);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-25px) rotate(5deg); }
+  }
+  .float { animation: float 4s ease-in-out infinite; }
+  .float-delayed { animation: float 5s ease-in-out infinite; animation-delay: 1s; }
+  .float-slow { animation: float 7s ease-in-out infinite; animation-delay: 2s; }
+
+  @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .spin-slow { animation: spinSlow 20s linear infinite; }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(43,130,173,0.28), 0 0 40px rgba(43,130,173,0.16); }
+    50% { box-shadow: 0 0 40px rgba(104,191,212,0.42), 0 0 80px rgba(104,191,212,0.24); }
+  }
+  .pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+
+  .shimmer-text {
+    background: linear-gradient(90deg, #d7a53b, #68bfd4, #2b82ad, #4aa9c3, #d7a53b);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmerMove 4s linear infinite;
+  }
+  @keyframes shimmerMove { to { background-position: 200% center; } }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  @keyframes orbMove1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(80px,-60px); } }
+  @keyframes orbMove2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-60px,80px); } }
+  @keyframes orbMove3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(50px,50px); } }
+
+  .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s cubic-bezier(0.25,0.46,0.45,0.94); }
+  .reveal.active { opacity: 1; transform: translateY(0); }
+
+  .glass {
+    background: rgba(255,255,255,0.82);
+    color: #173f57;
+    box-shadow: 0 14px 40px rgba(42,109,137,0.10);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(72,159,187,0.22);
+  }
+
+  .qr-container {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+  }
+  .qr-container::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    background: linear-gradient(135deg, #d7a53b, #68bfd4, #2b82ad, #4aa9c3);
+    border-radius: 24px;
+    z-index: -1;
+    animation: spinSlow 8s linear infinite;
+  }
+
+  /* ===== Game Overlay ===== */
+  .game-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .game-overlay.active { display: flex; opacity: 1; }
+
+  /* ===== Realistic Almirah Styles with 3D Opening Doors ===== */
+  .almirah-container-3d {
+    perspective: 1200px;
+    position: relative;
+  }
+
+  .almirah-cabinet {
+    position: relative;
+    background:
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,0.04) 0px,
+        rgba(0,0,0,0.04) 1px,
+        transparent 1px,
+        transparent 7px),
+      repeating-linear-gradient(0deg,
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.02) 2px,
+        transparent 2px,
+        transparent 14px),
+      linear-gradient(180deg, var(--wood-highlight), var(--wood-light) 20%, var(--wood-mid) 60%, var(--wood-dark));
+    border: 6px solid var(--wood-dark);
+    border-radius: 18px;
+    box-shadow:
+      0 30px 80px rgba(0,0,0,0.6),
+      inset 0 2px 0 rgba(255,255,255,0.15),
+      inset 0 -4px 12px rgba(0,0,0,0.5),
+      inset 4px 0 8px rgba(0,0,0,0.3),
+      inset -4px 0 8px rgba(0,0,0,0.3);
+  }
+
+  /* Dynamic Almirah Doors */
+  .almirah-door {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    background:
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,0.05) 0px,
+        rgba(0,0,0,0.05) 1px,
+        transparent 1px,
+        transparent 10px),
+      linear-gradient(135deg, var(--wood-highlight), var(--wood-light) 30%, var(--wood-mid) 70%, var(--wood-dark));
+    border: 4px solid var(--wood-dark);
+    z-index: 15;
+    /* Smooth 1.2s realistic door swing after the 5-second closed preview */
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), 0 10px 25px rgba(0,0,0,0.5);
+  }
+
+  .almirah-door.left-door {
+    left: 0;
+    transform-origin: left center;
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+  }
+
+  .almirah-door.right-door {
+    right: 0;
+    transform-origin: right center;
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+  }
+
+  /* When opened via class */
+  .almirah-cabinet.doors-open .left-door {
+    transform: rotateY(-82deg);
+  }
+  .almirah-cabinet.doors-open .right-door {
+    transform: rotateY(82deg);
+  }
+
+  /* Door panel styling & molding */
+  .door-panel-inner {
+    position: absolute;
+    inset: 16px;
+    border: 3px solid rgba(62, 39, 35, 0.6);
+    border-radius: 8px;
+    background: rgba(0,0,0,0.08);
+    box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
+  }
+
+  /* Crown / cornice on top of almirah */
+  .almirah-crown {
+    background: linear-gradient(180deg, var(--wood-highlight), var(--wood-light));
+    border-bottom: 4px solid var(--wood-dark);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  }
+
+  /* Door panel divider (center vertical stile) */
+  .almirah-divider {
+    background: linear-gradient(90deg, var(--wood-dark), var(--wood-grain), var(--wood-dark));
+    box-shadow: -2px 0 6px rgba(0,0,0,0.4), 2px 0 6px rgba(0,0,0,0.4);
+  }
+
+  /* Each shelf compartment */
+  .almirah-shelf {
+    position: relative;
+    background:
+      linear-gradient(180deg,
+        rgba(255,218,130,0.18) 0%,
+        rgba(255,224,165,0.07) 23%,
+        rgba(255,246,220,0.08) 48%,
+        rgba(63,33,20,0.18) 92%,
+        rgba(42,22,14,0.42) 100%),
+      linear-gradient(180deg, rgba(91,48,29,.88), rgba(53,28,18,.95));
+    border: 2px solid var(--wood-dark);
+    border-radius: 8px;
+    box-shadow:
+      inset 0 6px 10px rgba(0,0,0,0.5),
+      inset 0 -3px 6px rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  .almirah-shelf::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 6px;
+    background: linear-gradient(180deg, var(--wood-light), var(--wood-dark));
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
+
+  .almirah-shelf.drag-over {
+    transform: scale(1.04);
+    box-shadow: 0 0 30px rgba(16,185,129,0.7), inset 0 6px 10px rgba(0,0,0,0.3);
+    border-color: #4ba988 !important;
+  }
+  .almirah-shelf.drag-over-wrong {
+    transform: scale(1.04);
+    box-shadow: 0 0 30px rgba(239,68,68,0.7), inset 0 6px 10px rgba(0,0,0,0.3);
+    border-color: #ef4444 !important;
+  }
+
+  /* Door handle on the doors */
+  .door-handle-3d {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 60px;
+    background: linear-gradient(180deg, #d4af37, #d7a53b 30%, #b8860b 70%, #8b6914);
+    border-radius: 4px;
+    box-shadow: 0 0 12px rgba(251,191,36,0.7), inset 0 0 3px rgba(0,0,0,0.5);
+    z-index: 20;
+  }
+  .left-door .door-handle-3d { right: 12px; }
+  .right-door .door-handle-3d { left: 12px; }
+
+  /* Hanger inside hanging compartments */
+  .shelf-hanger {
+    position: absolute;
+    top: 4px;
+    left: 10%;
+    right: 10%;
+    height: 14px;
+    pointer-events: none;
+  }
+  .shelf-hanger::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #a1887f 20%, #a1887f 80%, transparent);
+    border-radius: 1px;
+  }
+
+  /* Drawer at bottom */
+  .almirah-drawer {
+    background:
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,0.05) 0px,
+        rgba(0,0,0,0.05) 1px,
+        transparent 1px,
+        transparent 8px),
+      linear-gradient(180deg, var(--wood-light), var(--wood-mid));
+    border: 3px solid var(--wood-dark);
+    border-radius: 6px;
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -3px 8px rgba(0,0,0,0.4);
+  }
+  .drawer-handle {
+    width: 40px;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #d4af37, #b8860b);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+
+  /* Clothing items */
+  .clothing-item {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .clothing-item:hover {
+    transform: scale(1.1) rotate(-5deg);
+    z-index: 10;
+  }
+  .clothing-item.dragging {
+    cursor: grabbing;
+    z-index: 9999;
+    transform: scale(1.2) rotate(10deg);
+  }
+  .clothing-item.placed {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  @keyframes correctPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+  .correct-pop { animation: correctPop 0.5s ease; }
+
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-10px) rotate(-5deg); }
+    40% { transform: translateX(10px) rotate(5deg); }
+    60% { transform: translateX(-8px) rotate(-3deg); }
+    80% { transform: translateX(8px) rotate(3deg); }
+  }
+  .wrong-shake { animation: wrongShake 0.5s ease; }
+
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    z-index: 200;
+    pointer-events: none;
+  }
+
+  .progress-fill { transition: width 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shine::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s ease;
+  }
+  .btn-shine:hover::after { left: 100%; }
+
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .marquee-track { animation: marquee 20s linear infinite; }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  .bounce-in { animation: bounceIn 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+
+  @keyframes wave {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .wave { animation: wave 2s ease-in-out infinite; }
+
+  .cloth-icon {
+    position: absolute;
+    font-size: 3rem;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+
+  @keyframes starPop {
+    0% { transform: scale(0) rotate(0deg); }
+    60% { transform: scale(1.3) rotate(180deg); }
+    100% { transform: scale(1) rotate(360deg); }
+  }
+  .star-pop { animation: starPop 0.6s ease forwards; }
+
+  @keyframes promoGlow {
+    0%, 100% { text-shadow: 0 0 20px rgba(215,165,59,0.42); }
+    50% { text-shadow: 0 0 40px rgba(215,165,59,0.82), 0 0 60px rgba(104,191,212,0.38); }
+  }
+  .promo-glow { animation: promoGlow 2s ease-in-out infinite; }
+
+  @keyframes scaleIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .scale-in { animation: scaleIn 0.5s ease forwards; }
+
+  .placed-glow {
+    box-shadow: 0 0 15px rgba(16,185,129,0.4) !important;
+    border-color: rgba(16,185,129,0.6) !important;
+  }
+
+
+
+  @media (max-width: 640px) {
+    .game-almirah { transform: scale(0.92); transform-origin: top center; }
+  }
+
+
+  /* ===== Premium light theme refinements ===== */
+  body { color: #173f57; }
+  .animated-bg { background: linear-gradient(-45deg, #f9fcfd, #eaf7fb, #ffffff, #eef7f2, #e4f3f8); }
+  .btn-shine { color: #ffffff !important; }
+  .btn-shine * { color: #ffffff !important; }
+  .text-slate-800 { color: #173f57 !important; }
+  .text-slate-700 { color: #26536b !important; }
+  .text-slate-600 { color: #406b7f !important; }
+  .text-slate-500 { color: #5d7888 !important; }
+  .text-slate-400 { color: #7893a1 !important; }
+  .border-white\/10 { border-color: rgba(58,128,157,0.16) !important; }
+  .product-card {
+    display: block;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    background: rgba(255,255,255,0.88);
+    border: 1px solid rgba(62,146,174,0.18);
+    box-shadow: 0 14px 38px rgba(47,112,139,0.10);
+    color: #173f57;
+    transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+  }
+  .product-card:hover { transform: translateY(-8px); box-shadow: 0 22px 52px rgba(47,112,139,0.18); border-color: rgba(62,146,174,0.38); }
+  .product-image-wrap { height: 250px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:linear-gradient(135deg,#eef9fb,#fffaf4); }
+  .product-image-wrap img { width:100%; height:100%; object-fit:cover; transition:transform .6s cubic-bezier(.22,.61,.36,1); }
+  .product-card:hover .product-image-wrap img { transform:scale(1.07); }
+  .image-fallback { background: radial-gradient(circle at 30% 20%,#fff,#dff3f7 60%,#b9dfe9); }
+  .product-card-body { padding: 1.2rem 1.3rem 1.35rem; }
+  .product-kicker { font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; font-weight:800; color:#4aa9c3; margin-bottom:.35rem; }
+  .product-card h3 { margin:0 0 .35rem; font-family:'Bricolage Grotesque',sans-serif; font-size:1.35rem; font-weight:800; color:#173f57; }
+  .product-card p { margin:0 0 1rem; min-height:2.7rem; color:#66808c; font-size:.9rem; line-height:1.45; }
+  .product-link { color:#2b82ad; font-weight:800; font-size:.86rem; }
+  .product-link span { display:inline-block; transition:transform .25s ease; }
+  .product-card:hover .product-link span { transform:translate(3px,-3px); }
+  .social-link { display:flex; align-items:center; gap:.7rem; padding:.7rem .85rem; border:1px solid rgba(62,146,174,.18); border-radius:.8rem; background:rgba(255,255,255,.58); color:#2b6078; transition:transform .25s ease, background .25s ease, border-color .25s ease; }
+  .social-link:hover { transform:translateX(4px); background:#fff; border-color:rgba(62,146,174,.4); color:#1b789b; }
+
+  /* Transparent watermark logos on almirah doors (No white background) */
+  .door-brand-badge {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 30;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .door-brand-badge img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    mix-blend-mode: multiply;
+    opacity: 0.85;
+    filter: contrast(1.3) brightness(0.95);
+  }
+
+  /* First logo: left door, top-left — watermark with white bg removed, slightly bigger */
+  .door-brand-top {
+    top: 18px;
+    left: 14px;
+    width: clamp(95px, 62%, 140px);
+    aspect-ratio: 2.7 / 1;
+  }
+
+  /* Second logo: right door, bottom-right — rotated 90deg, white bg removed, slightly bigger */
+  .door-brand-bottom {
+    right: 18px;
+    bottom: 36px;
+    left: auto;
+    width: clamp(95px, 62%, 140px);
+    aspect-ratio: 2.7 / 1;
+    transform: rotate(-90deg);
+    transform-origin: center;
+  }
+
+  .door-brand-badge.logo-fallback {
+    padding: 4px 8px;
+    border: 1px dashed rgba(255, 213, 79, 0.35) !important;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2) !important;
+  }
+  .door-brand-badge.logo-fallback::after {
+    content: '✦ MODISH ✦';
+    font: 800 12px 'Bricolage Grotesque', sans-serif;
+    letter-spacing: .18em;
+    color: rgba(255, 224, 130, 0.75);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+  }
+  .shelf-header-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .shelf-name-en {
+    color: #ffffff !important;
+    font-weight: 800;
+    font-size: 11px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+  .shelf-name-hi {
+    color: #ffd54f !important;
+    font-weight: 700;
+    font-size: 10.5px;
+    background: rgba(0, 0, 0, 0.55);
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 213, 79, 0.4);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+    letter-spacing: 0.02em;
+  }
+
+  /* Realistic warm shelf lighting: a bright tube, a soft bulb halo and a downward street-lamp beam. */
+  .almirah-shelf {
+    background:
+      radial-gradient(ellipse 82% 62% at 50% 0%, rgba(255,231,157,.42) 0%, rgba(255,216,123,.18) 34%, transparent 76%),
+      linear-gradient(180deg,
+        rgba(255,218,130,0.18) 0%,
+        rgba(255,224,165,0.07) 23%,
+        rgba(255,246,220,0.08) 48%,
+        rgba(63,33,20,0.18) 92%,
+        rgba(42,22,14,0.42) 100%),
+      linear-gradient(180deg, rgba(91,48,29,.88), rgba(53,28,18,.95));
+    box-shadow:
+      inset 0 22px 34px rgba(255,214,113,.16),
+      inset 0 6px 10px rgba(0,0,0,0.5),
+      inset 0 -3px 6px rgba(255,255,255,0.05);
+  }
+  .almirah-shelf::before {
+    content:'';
+    position:absolute;
+    left:8%; right:8%; top:7px;
+    height:5px;
+    border-radius:999px;
+    background:linear-gradient(90deg, transparent, #ffd978 14%, #fffdf0 50%, #ffd978 86%, transparent);
+    box-shadow:
+      0 0 5px #fff1ae,
+      0 0 11px #ffd978,
+      0 0 24px rgba(255,205,91,.92),
+      0 12px 25px 8px rgba(255,199,82,.24);
+    opacity:.94;
+    z-index:1;
+    animation:shelfLightPulse 3.2s ease-in-out infinite;
+  }
+  .shelf-light-beam {
+    position:absolute;
+    top:8px;
+    left:13%;
+    width:74%;
+    height:82%;
+    background:linear-gradient(180deg, rgba(255,243,185,.38), rgba(255,220,131,.16) 34%, rgba(255,204,94,.04) 72%, transparent 100%);
+    clip-path:polygon(9% 0, 91% 0, 100% 100%, 0 100%);
+    filter:blur(4px);
+    opacity:.62;
+    mix-blend-mode:screen;
+    pointer-events:none;
+    z-index:0;
+    animation:streetLampBeam 3.2s ease-in-out infinite;
+  }
+  .almirah-shelf.drag-over::before { opacity:1; box-shadow:0 0 8px #fff8cf, 0 0 18px #ffd978, 0 0 30px rgba(255,205,91,1), 0 14px 30px 10px rgba(255,199,82,.38); }
+  .almirah-shelf.drag-over .shelf-light-beam { opacity:.9; }
+  @keyframes shelfLightPulse { 0%,100% { opacity:.78; transform:scaleX(.94); } 50% { opacity:1; transform:scaleX(1); } }
+  @keyframes streetLampBeam { 0%,100% { opacity:.42; } 50% { opacity:.72; } }
+  @keyframes premiumFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
+  .product-card:nth-child(3n+1) { animation:premiumFloat 7s ease-in-out infinite; }
+  .product-card:nth-child(3n+2) { animation:premiumFloat 8s ease-in-out infinite .6s; }
+  .product-card:nth-child(3n) { animation:premiumFloat 9s ease-in-out infinite 1.2s; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  }
+
+</style>
 </head>
-<body>
-  <iframe src="https://script.google.com/macros/s/AKfycbw52xV-Gz1xfhjiDA4Kaw0D_71nyrnCHd2KkOdfyTeOUatEdJpTvSR_b8-06LK1tdEh8g/exec"></iframe>
-</body>
+<body class="animated-bg">
+
+<canvas id="particleCanvas" class="fixed inset-0 pointer-events-none" style="z-index:1;"></canvas>
+
+<div class="fixed inset-0 pointer-events-none overflow-hidden" style="z-index:0;">
+  <div class="orb" style="width:400px;height:400px;background:#2b82ad;top:-100px;left:-100px;animation:orbMove1 12s ease-in-out infinite;"></div>
+  <div class="orb" style="width:350px;height:350px;background:#68bfd4;top:30%;right:-80px;animation:orbMove2 14s ease-in-out infinite;"></div>
+  <div class="orb" style="width:300px;height:300px;background:#4aa9c3;bottom:10%;left:20%;animation:orbMove3 10s ease-in-out infinite;"></div>
+  <div class="orb" style="width:250px;height:250px;background:#efaa73;top:60%;right:30%;animation:orbMove1 16s ease-in-out infinite;"></div>
+</div>
+
+<div class="fixed inset-0 pointer-events-none overflow-hidden" style="z-index:1;" id="floatingCloths"></div>
+
+<!-- ===================== NAVBAR ===================== -->
+<nav class="fixed top-0 left-0 right-0 z-50 px-4 sm:px-8 py-4 transition-all duration-300" id="navbar">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <!-- User's Brand Logo beside Brand Name with Fallback to SVG -->
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center pulse-glow overflow-hidden shadow-lg bg-white/10 relative">
+        <img src="https://lh3.googleusercontent.com/d/1eBAU_qJKp2A-vZcWTcHfJhbSV5Chjst0" 
+             alt="Modish Logo" 
+             class="w-full h-full object-cover"
+             onerror="this.style.display='none'; document.getElementById('logoSvgFallback').style.display='flex';">
+        <div id="logoSvgFallback" style="display:none;" class="absolute inset-0 items-center justify-center bg-gradient-to-br from-cyan-700 to-sky-400">
+          <svg viewBox="0 0 64 64" class="w-8 h-8 text-slate-800" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 24 L20 12 L32 20 L44 12 L52 24 Z" fill="#d7a53b" stroke="#d7a53b" stroke-width="1.5"/>
+            <path d="M32 18 C32 15 29 12 26 12" stroke="#d7a53b" stroke-width="2"/>
+            <path d="M10 42 Q32 34 54 42 L48 48 Q32 44 16 48 Z" fill="#d7a53b" stroke="#d7a53b" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+      <div>
+        <div class="font-display font-extrabold text-lg leading-none tracking-wide">Modish</div>
+        <div class="text-xs text-slate-500 leading-none mt-0.5 tracking-wider">ENTERPRISES</div>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center gap-8 text-sm text-slate-600">
+      <a href="#home" class="hover:text-slate-800 transition">Home</a>
+      <a href="#features" class="hover:text-slate-800 transition">Why Us</a>
+      <a href="#qr" class="hover:text-slate-800 transition">Play & Win</a>
+      <a href="#collection" class="hover:text-slate-800 transition">Collection</a>
+    </div>
+    <button onclick="handlePlayClick()" class="btn-shine px-5 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105 shadow-lg" style="background:linear-gradient(135deg,#d7a53b,#68bfd4);color:#f7fbfc;">
+      Scan & Play
+    </button>
+  </div>
+</nav>
+
+<!-- ===================== HERO ===================== -->
+<section id="home" class="relative min-h-screen flex items-center justify-center px-4 pt-20" style="z-index:2;">
+  <div class="max-w-6xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-8 bounce-in">
+      <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+      <span class="text-xs font-medium tracking-wide">Premium home appliances and iron almirahs, made for modern living</span>
+    </div>
+    <h1 class="font-display font-black leading-[0.9] mb-6" style="font-size:clamp(2.5rem,8vw,6rem);">
+      <span class="block shimmer-text">Scan. Arrange.</span>
+      <span class="block text-slate-800">Win Exclusive</span>
+      <span class="block" style="background:linear-gradient(135deg,#d7a53b,#efaa73);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Discounts!</span>
+    </h1>
+    <p class="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+      Scan our QR code, play the world's most satisfying almirah-arranging game, and unlock a secret promo code for your next home-appliance order.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+      <button onclick="scrollToQR()" class="btn-shine group px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all hover:scale-105 pulse-glow" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);color:white;">
+        <iconify-icon icon="mdi:qrcode-scan" class="text-2xl"></iconify-icon>
+        Scan to Play
+        <iconify-icon icon="mdi:arrow-right" class="text-xl group-hover:translate-x-1 transition"></iconify-icon>
+      </button>
+      <button onclick="handlePlayClick()" class="px-8 py-4 rounded-full font-bold text-lg glass transition-all hover:scale-105 flex items-center gap-3">
+        <iconify-icon icon="mdi:gamepad-variant" class="text-2xl"></iconify-icon>
+        Play Now
+      </button>
+    </div>
+    <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
+      <div class="glass rounded-2xl p-4 sm:p-6">
+        <div class="font-display font-black text-2xl sm:text-4xl" style="color:#d7a53b;" id="statPlays">50K+</div>
+        <div class="text-xs sm:text-sm text-slate-500 mt-1">Players Won</div>
+      </div>
+      <div class="glass rounded-2xl p-4 sm:p-6">
+        <div class="font-display font-black text-2xl sm:text-4xl" style="color:#68bfd4;">₹700</div>
+        <div class="text-xs sm:text-sm text-slate-500 mt-1">Max Discount</div>
+      </div>
+      <div class="glass rounded-2xl p-4 sm:p-6">
+        <div class="font-display font-black text-2xl sm:text-4xl" style="color:#4aa9c3;">4.9★</div>
+        <div class="text-xs sm:text-sm text-slate-500 mt-1">Player Rating</div>
+      </div>
+    </div>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 wave">
+      <iconify-icon icon="mdi:chevron-down" class="text-3xl text-slate-400"></iconify-icon>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MARQUEE ===================== -->
+<div class="relative py-4 overflow-hidden" style="z-index:2;background:linear-gradient(90deg,#2b82ad,#68bfd4,#efaa73);">
+  <div class="marquee-track flex whitespace-nowrap">
+    <div class="flex items-center gap-8 px-4 font-display font-bold text-lg">
+      <span>🔥 SCAN & WIN</span><span>•</span>
+      <span>🏷️ PREMIUM PRODUCTS</span><span>•</span>
+      <span>❄️🗄 PREMIUM COOLERS/ALMIRAHS</span><span>•</span>
+      <span>💰 EXCLUSIVE DISCOUNTS</span><span>•</span>
+      <span>🏆 WORLD-CLASS PRODUCTS</span><span>•</span>
+    </div>
+    <div class="flex items-center gap-8 px-4 font-display font-bold text-lg">
+      <span>🔥 SCAN & WIN</span><span>•</span>
+      <span>🏷️ PREMIUM PRODUCTS</span><span>•</span>
+      <span>❄️🗄 PREMIUM COOLERS/ALMIRAHS</span><span>•</span>
+      <span>💰 EXCLUSIVE DISCOUNTS</span><span>•</span>
+      <span>🏆 WORLD-CLASS PRODUCTS</span><span>•</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== FEATURES ===================== -->
+<section id="features" class="relative py-24 px-4" style="z-index:2;">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <div class="inline-block glass px-4 py-2 rounded-full mb-4 text-sm text-slate-600">Why Modish?</div>
+      <h2 class="font-display font-black text-4xl sm:text-6xl mb-4">
+        Fresh Air, Styled <span class="shimmer-text">Space</span>
+      </h2>
+      <p class="text-slate-500 text-lg max-w-2xl mx-auto">
+        We're redefining the shopping experience. Play, win, and shop — all in one place.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="glass rounded-3xl p-8 reveal hover:scale-105 transition-all duration-300 group">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-6 transition" style="background:linear-gradient(135deg,#2b82ad,#4aa9c3);">
+          <iconify-icon icon="mdi:tshirt-crew" class="text-3xl text-slate-800"></iconify-icon>
+        </div>
+        <h3 class="font-display font-bold text-2xl mb-3">Premium Collection</h3>
+        <p class="text-slate-500 leading-relaxed">From everyday desert coolers to heavy metal storage almirahs, curate your home with top-quality comfort and security at unbeatable prices.</p>
+      </div>
+      <div class="glass rounded-3xl p-8 reveal hover:scale-105 transition-all duration-300 group" style="transition-delay:0.15s;">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-6 transition" style="background:linear-gradient(135deg,#68bfd4,#efaa73);">
+          <iconify-icon icon="mdi:gamepad-round" class="text-3xl text-slate-800"></iconify-icon>
+        </div>
+        <h3 class="font-display font-bold text-2xl mb-3">Play & Save</h3>
+        <p class="text-slate-500 leading-relaxed">Arrange clothes in our realistic 8-shelf almirah, beat the clock, and unlock secret promo codes worth up to ₹700 off your next purchase.</p>
+      </div>
+      <div class="glass rounded-3xl p-8 reveal hover:scale-105 transition-all duration-300 group" style="transition-delay:0.3s;">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-6 transition" style="background:linear-gradient(135deg,#4ba988,#d7a53b);">
+          <iconify-icon icon="mdi:truck-fast" class="text-3xl text-slate-800"></iconify-icon>
+        </div>
+        <h3 class="font-display font-bold text-2xl mb-3">Fast Delivery</h3>
+        <p class="text-slate-500 leading-relaxed">Won a discount? Use it instantly. Free express delivery on all orders above ₹14999. Your your order, delivered to your door.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== QR SECTION ===================== -->
+<section id="qr" class="relative py-24 px-4" style="z-index:2;">
+  <div class="max-w-4xl mx-auto">
+    <div class="glass rounded-[2.5rem] p-8 sm:p-16 text-center reveal pulse-glow">
+      <div class="inline-block glass px-4 py-2 rounded-full mb-4 text-sm text-slate-600">
+        <iconify-icon icon="mdi:qrcode" class="inline mr-1"></iconify-icon>
+        Scan & Play
+      </div>
+      <h2 class="font-display font-black text-4xl sm:text-6xl mb-4">
+        Ready to <span class="shimmer-text">Play?</span>
+      </h2>
+      <p class="text-slate-500 text-lg mb-10 max-w-xl mx-auto">
+        Scan the QR code with your phone camera to start the almirah challenge. Win exciting discounts!
+      </p>
+      <div class="flex flex-col items-center gap-8">
+        <div class="qr-container p-4 bg-white rounded-3xl">
+          <div id="qrcode" class="w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center"></div>
+        </div>
+        <div class="pt-4">
+          <p class="text-slate-400 text-sm mb-4">— Or play right here —</p>
+          <button onclick="handlePlayClick()" class="btn-shine px-10 py-4 rounded-full font-bold text-xl flex items-center gap-3 mx-auto transition-all hover:scale-105 shadow-xl" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);">
+            <iconify-icon icon="mdi:play-circle" class="text-2xl"></iconify-icon>
+            Play Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== COLLECTION ===================== -->
+<section id="collection" class="relative py-24 px-4" style="z-index:2;">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-4 text-sm text-slate-600">
+        <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+        Modish Home Appliances
+      </div>
+      <h2 class="font-display font-black text-4xl sm:text-6xl mb-4">
+        Premium products for <span class="shimmer-text">every home</span>
+      </h2>
+      <p class="text-slate-500 text-lg max-w-2xl mx-auto">
+        Explore the complete Modish collection — dependable appliances and smart storage solutions, made for everyday comfort.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <a href="https://modishenterprises.com/product-category/air-coolers-online/" target="_blank" rel="noopener" class="product-card reveal group">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2026/01/front-straight-pose-1-768x839.png" alt="Modish air cooler" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+        <div class="product-card-body"><div class="product-kicker">01 · Cooling</div><h3>Air Coolers</h3><p>Efficient cooling for comfortable homes and workspaces.</p><span class="product-link">Explore collection <span>↗</span></span></div>
+      </a>
+      <a href="https://modishenterprises.com/product-category/buy-iron-almirah-online/" target="_blank" rel="noopener" class="product-card reveal group" style="transition-delay:0.08s;">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2026/01/Royal-Embosis.jpg" alt="Royal Embosis iron almirah" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+        <div class="product-card-body"><div class="product-kicker">02 · Storage</div><h3>Almirahs</h3><p>Strong, secure and stylish iron storage for every room.</p><span class="product-link">Explore collection <span>↗</span></span></div>
+      </a>
+      <a href="https://modishenterprises.com/product-category/washing-machine/" target="_blank" rel="noopener" class="product-card reveal group" style="transition-delay:0.16s;">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2026/01/MDWM14.jpg" alt="Modish washing machine" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+        <div class="product-card-body"><div class="product-kicker">03 · Laundry</div><h3>Washing Machines</h3><p>Practical wash programs with easy movement and everyday reliability.</p><span class="product-link">Explore collection <span>↗</span></span></div>
+      </a>
+      <a href="https://modishenterprises.com/product-category/buy-the-best-led-tv-online/" target="_blank" rel="noopener" class="product-card reveal group" style="transition-delay:0.24s;">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2025/12/Untitled-design-13.jpg" alt="Modish smart LED TV" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+        <div class="product-card-body"><div class="product-kicker">04 · Entertainment</div><h3>LED TVs</h3><p>Brilliant picture, smart features and immersive home entertainment.</p><span class="product-link">Explore collection <span>↗</span></span></div>
+      </a>
+      <a href="https://modishenterprises.com/product-category/buy-mixers-and-juicers-online/" target="_blank" rel="noopener" class="product-card reveal group" style="transition-delay:0.32s;">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2025/12/Untitled-design-3-1.jpg" alt="Modish mixer and juicer" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+        <div class="product-card-body"><div class="product-kicker">05 · Kitchen</div><h3>Mixers &amp; Juicers</h3><p>Powerful kitchen companions for faster, fresher preparation.</p><span class="product-link">Explore collection <span>↗</span></span></div>
+      </a>
+      <a href="https://modishenterprises.com/product-category/sewing-machines-online/" target="_blank" rel="noopener" class="product-card reveal group" style="transition-delay:0.4s;">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2024/01/1.jpg" alt="Modish sewing machine" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+        <div class="product-card-body"><div class="product-kicker">06 · Craft</div><h3>Sewing Machines</h3><p>Dependable machines for creative projects at every skill level.</p><span class="product-link">Explore collection <span>↗</span></span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="relative py-16 px-4 border-t border-white/10" style="z-index:2;">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-4 gap-8 mb-12">
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-sky-600">
+            <iconify-icon icon="mdi:hanger" class="text-xl text-slate-800"></iconify-icon>
+          </div>
+          <div class="font-display font-extrabold text-lg">Modish Enterprises</div>
+        </div>
+        <p class="text-sm text-slate-500 leading-relaxed">Our Story
+With a proud legacy spanning 25 years, we are dedicated to manufacturing and selling premium-quality products while delivering unparalleled service excellence. Our commitment to quality assurance ensures that customers can trust in the reliability and performance of every item we offer.
+
+Our extensive range includes top-of-the-line grills, iron coolers, fiber coolers, plastic coolers, and exhaust fans, all crafted to the highest standards of excellence. Serving as a comprehensive solution for all your needs, we guarantee exceptional quality across our product line..</p>
+      </div>
+      <div>
+        <h4 class="font-bold mb-4 text-sm uppercase tracking-wide text-slate-400">Shop</h4>
+        <div class="space-y-2 text-sm text-slate-500">
+          <div>Air Coolers</div>
+          <div>Washing Machine</div>
+          <div>Almirahs</div>
+          <div>Mixers & Juicers</div>
+          <div>Sewing Machines</div>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-bold mb-4 text-sm uppercase tracking-wide text-slate-400">Company</h4>
+        <div class="space-y-2 text-sm text-slate-500">
+          <div>Bharat Krishi Farm, Khasra no - 103, near Bank of Baroda , Seva Dham Road, Mandoli - 110093</div>
+          <div>🖂 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="74191b101d071c111a00110604061d07110707341319151d185a171b19">[email&#160;protected]</a></div>
+          <div>📞+91 78678 66869</div>
+        </div>
+      </div>
+      <div id="social">
+        <h4 class="font-bold mb-4 text-sm uppercase tracking-wide text-slate-400">Follow Modish</h4>
+        <p class="text-sm text-slate-500 mb-4">Offers, new models and home-appliance updates.</p>
+        <div class="space-y-2">
+          <a href="https://www.instagram.com/modishhomeappliances?igsi=anoxOTM4NHU0d3pt" target="_blank" rel="noopener noreferrer"
+             aria-label="Follow Modish Home Appliances on Instagram" class="social-link">
+            <iconify-icon icon="mdi:instagram" class="text-xl"></iconify-icon><span>Instagram</span><span class="ml-auto">↗</span>
+          </a>
+          <a href="https://www.facebook.com/modishhomeappliances/" target="_blank" rel="noopener noreferrer"
+             aria-label="Follow Modish Home Appliances on Facebook" class="social-link">
+            <iconify-icon icon="mdi:facebook" class="text-xl"></iconify-icon><span>Facebook</span><span class="ml-auto">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-white/10 pt-8 text-center text-sm text-slate-400">
+      © 2026 Modish Enterprises. All rights reserved. Play fair, live comfortably. 🎮👕
+    </div>
+  </div>
+</footer>
+
+<!-- ===================== PHONE VERIFICATION MODAL (ONE PLAY PER PLAYER / PASSWORD PROMPT) ===================== -->
+<div id="verifyModal" class="fixed inset-0 z-50 items-center justify-center p-4 hidden" style="background:rgba(231,246,250,0.92);backdrop-filter:blur(15px);">
+  <div class="glass rounded-3xl p-6 sm:p-8 max-w-md w-full scale-in text-center relative shadow-2xl border border-white/20">
+    <button onclick="closeVerifyModal()" class="absolute top-4 right-4 glass w-8 h-8 rounded-full flex items-center justify-center hover:scale-110 transition">
+      <iconify-icon icon="mdi:close" class="text-lg"></iconify-icon>
+    </button>
+    
+    <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4 shadow-lg" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);">
+      <iconify-icon icon="mdi:shield-account" class="text-3xl text-slate-800"></iconify-icon>
+    </div>
+
+    <h3 class="font-display font-black text-2xl mb-2">Player Verification</h3>
+    <p class="text-sm text-slate-500 mb-6">Enter your phone number to start or verify your game session. (One free play per user)</p>
+
+    <div class="space-y-4 text-left">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">PHONE NUMBER</label>
+        <input type="tel" id="verifyPhoneInput" placeholder="Enter 10-digit mobile number" maxlength="15"
+          class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-pink-400 transition font-mono">
+      </div>
+
+      <!-- Password section (hidden initially, shown if player already played) -->
+      <div id="passwordContainer" class="hidden">
+        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 mb-3 text-xs text-amber-300 flex items-center gap-2">
+          <iconify-icon icon="mdi:alert-circle" class="text-lg shrink-0"></iconify-icon>
+          <span>You have already played with this number! Please enter the access password to play again.</span>
+        </div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">ACCESS PASSWORD</label>
+        <input type="password" id="accessPasswordInput" placeholder="Enter password (e.g. Modish2026!)"
+          class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-yellow-400 transition">
+      </div>
+
+      <p id="verifyError" class="text-red-400 text-xs hidden"></p>
+
+      <button onclick="submitVerification()" id="verifyBtn" class="btn-shine w-full py-3.5 rounded-xl font-bold text-base transition-all hover:scale-[1.02] shadow-lg" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);">
+        Continue to Game
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== GAME OVERLAY ===================== -->
+<div id="gameOverlay" class="game-overlay items-center justify-center" style="background:linear-gradient(-45deg,#e9f6f9,#ccebf3,#dceff5,#f5eee8);background-size:400% 400%;animation:gradientShift 15s ease infinite;">
+
+  <div id="gameContainer" class="w-full h-full max-w-5xl mx-auto p-3 sm:p-6 flex flex-col overflow-y-auto">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-3 sticky top-0 z-20">
+      <button onclick="closeGame()" class="glass w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition shrink-0">
+        <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+      </button>
+      <div class="flex items-center gap-2 sm:gap-4">
+        <div class="glass px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center gap-2">
+          <iconify-icon icon="mdi:star-four" class="text-yellow-400"></iconify-icon>
+          <span class="font-bold text-sm sm:text-base" id="gameScore">0</span>
+        </div>
+        <div class="glass px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center gap-2">
+          <iconify-icon icon="mdi:check-circle" class="text-green-400"></iconify-icon>
+          <span class="font-bold text-sm sm:text-base"><span id="gameProgress">0</span>/<span id="gameTotal">8</span></span>
+        </div>
+        <div class="glass px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center gap-2">
+          <iconify-icon icon="mdi:timer-sand" class="text-cyan-400"></iconify-icon>
+          <span class="font-bold text-sm sm:text-base" id="gameTimer">01:30</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="w-full h-2 rounded-full bg-white/10 mb-3 overflow-hidden">
+      <div id="progressBar" class="progress-fill h-full rounded-full" style="width:0%;background:linear-gradient(90deg,#4ba988,#d7a53b,#68bfd4);"></div>
+    </div>
+
+    <!-- Title & Countdown Status -->
+    <div class="text-center mb-2 flex flex-col items-center gap-1.5">
+      <h2 class="font-display font-black text-lg sm:text-2xl">
+        <iconify-icon icon="mdi:wardrobe-outline" class="inline mr-2 text-cyan-600"></iconify-icon>
+        Arrange the <span class="shimmer-text">Almirah!</span>
+        <span class="inline-block ml-1 text-sky-900 font-extrabold text-sm sm:text-lg bg-sky-100/90 px-2.5 py-0.5 rounded-lg border border-sky-300/70 shadow-xs">अलमारी व्यवस्थित करें!</span>
+      </h2>
+      <div id="doorCountdownBadge" class="inline-flex items-center gap-2 px-4 py-1 rounded-full text-xs sm:text-sm font-bold shadow-md transition-all duration-300" style="background:linear-gradient(135deg,#d7a53b,#efaa73);color:#2b1810;">
+        <iconify-icon icon="mdi:lock-outline" class="text-base"></iconify-icon>
+        <span>Almirah opening in <strong class="text-sm" id="doorCountdownSec">5</strong>s...</span>
+      </div>
+      <p class="text-xs text-slate-700 font-semibold">Drag each clothing item to its correct shelf / <span class="text-sky-950 font-bold">हर कपड़े को उसकी सही शेल्फ में रखें।</span></p>
+    </div>
+
+    <!-- ===== REALISTIC 8-SECTION ALMIRAH WITH DYNAMIC 3D OPENING DOORS ===== -->
+    <div class="flex-1 flex flex-col items-center justify-start gap-3 game-almirah">
+
+      <div class="almirah-container-3d w-full max-w-2xl">
+        <div id="almirahCabinet" class="almirah-cabinet w-full p-3 sm:p-4">
+
+          <!-- 3D Openable Doors (Left & Right) with Transparent Horizontal Watermark Logos -->
+          <div id="leftDoor" class="almirah-door left-door">
+            <div class="door-panel-inner"></div>
+            <!-- Transparent Horizontal Watermark Logo: Top-Left Door -->
+            <div class="door-brand-badge door-brand-top">
+              <img src="https://lh3.googleusercontent.com/d/1eBAU_qJKp2A-vZcWTcHfJhbSV5Chjst0" alt="Modish Enterprises" onerror="this.style.display='none'; this.parentElement.classList.add('logo-fallback');">
+            </div>
+            <div class="door-handle-3d"></div>
+          </div>
+          <div id="rightDoor" class="almirah-door right-door">
+            <div class="door-panel-inner"></div>
+            <!-- Transparent Horizontal Watermark Logo: Bottom-Right Door -->
+            <div class="door-brand-badge door-brand-bottom">
+              <img src="https://lh3.googleusercontent.com/d/1eBAU_qJKp2A-vZcWTcHfJhbSV5Chjst0" alt="Modish Enterprises" onerror="this.style.display='none'; this.parentElement.classList.add('logo-fallback');">
+            </div>
+            <div class="door-handle-3d"></div>
+          </div>
+
+          <!-- Crown / Cornice -->
+          <div class="almirah-crown text-center py-2 mb-2 rounded-t-md">
+            <span class="font-display font-bold text-slate-700 text-xs sm:text-sm tracking-[0.2em]">✦ MODISH HOME APPLIANCES ✦</span>
+          </div>
+
+          <!-- 8 shelves: 4 rows × 2 cols (Bilingual: High-Contrast English + Glowing Gold Hindi) -->
+          <div class="grid grid-cols-2 gap-2 sm:gap-3 relative">
+
+            <!-- Center vertical divider -->
+            <div class="almirah-divider absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-1.5 rounded-full" style="z-index:3;"></div>
+
+            <!-- Shelf 1: Shirts -->
+            <div class="almirah-shelf rounded-lg p-2 min-h-[90px] sm:min-h-[110px]" data-category="shirts">
+              <span class="shelf-light-beam" aria-hidden="true"></span>
+              <div class="shelf-hanger"></div>
+              <div class="shelf-header-label mb-1 relative z-10">
+                <iconify-icon icon="mdi:tshirt-crew" class="text-base text-amber-300"></iconify-icon>
+                <span class="shelf-name-en">Shirts</span>
+                <span class="shelf-name-hi">शर्ट्स</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5 items-start justify-start shelf-items" data-category="shirts"></div>
+            </div>
+
+            <!-- Shelf 2: Pants -->
+            <div class="almirah-shelf rounded-lg p-2 min-h-[90px] sm:min-h-[110px]" data-category="pants">
+              <span class="shelf-light-beam" aria-hidden="true"></span>
+              <div class="shelf-header-label mb-1 relative z-10">
+                <iconify-icon icon="mdi:jeans" class="text-base text-amber-300"></iconify-icon>
+                <span class="shelf-name-en">Pants &amp; Jeans</span>
+                <span class="shelf-name-hi">पैंट्स / जींस</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5 items-start justify-start shelf-items" data-category="pants"></div>
+            </div>
+
+            <!-- Shelf 3: Dresses -->
+            <div class="almirah-shelf rounded-lg p-2 min-h-[90px] sm:min-h-[110px]" data-category="dresses">
+              <span class="shelf-light-beam" aria-hidden="true"></span>
+              <div class="shelf-hanger"></div>
+              <div class="shelf-header-label mb-1 relative z-10">
+                <iconify-icon icon="mdi:hanger" class="text-base text-amber-300"></iconify-icon>
+                <span class="shelf-name-en">Dresses</span>
+                <span class="shelf-name-hi">ड्रेसेस</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5 items-start justify-start shelf-items" data-category="dresses"></div>
+            </div>
+
+            <!-- Shelf 4: Sarees -->
+            <div class="almirah-shelf rounded-lg p-2 min-h-[90px] sm:min-h-[110px]" data-category="sarees">
+              <span class="shelf-light-beam" aria-hidden="true"></span>
+              <div class="shelf-hanger"></div>
+              <div class="shelf-header-label mb-1 relative z-10">
+                <iconify-icon icon="mdi:scarf" class="text-base text-amber-300"></iconify-icon>
+                <span class="shelf-name-en">Sarees &amp; Ethnic</span>
+                <span class="shelf-name-hi">साड़ियां / एथनिक</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5 items-start justify-start shelf-items" data-category="sarees"></div>
+            </div>
+
+            <!-- Shelf 5: Footwear -->
+            <div class="almirah-shelf rounded-lg p-2 min-h-[90px] sm:min-h-[110px]" data-category="footwear">
+              <span class="shelf-light-beam" aria-hidden="true"></span>
+              <div class="shelf-header-label mb-1 relative z-10">
+                <iconify-icon icon="mdi:shoe-sneaker" class="text-base text-amber-300"></iconify-icon>
+                <span class="shelf-name-en">Footwear</span>
+                <span class="shelf-name-hi">जूते-चप्पल</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5 items-start justify-start shelf-items" data-category="footwear"></div>
+            </div>
+
+            <!-- Shelf 6: Accessories -->
+            <div class="almirah-shelf rounded-lg p-2 min-h-[90px] sm:min-h-[110px]" data-category="accessories">
+              <span class="shelf-light-beam" aria-hidden="true"></span>
+              <div class="shelf-header-label mb-1 relative z-10">
+                <iconify-icon icon="mdi:hat-cowboy" class="text-base text-amber-300"></iconify-icon>
+                <span class="shelf-name-en">Accessories</span>
+                <span class="shelf-name-hi">एक्सेसरीज़</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5 items-start justify-start shelf-items" data-category="accessories"></div>
+            </div>
+
+            <!-- Shelf 7: Innerwear -->
+            <div class="almirah-shelf rounded-lg p-2 min-h-[90px] sm:min-h-[110px]" data-category="innerwear">
+              <span class="shelf-light-beam" aria-hidden="true"></span>
+              <div class="shelf-header-label mb-1 relative z-10">
+                <iconify-icon icon="mdi:tshirt-crew-outline" class="text-base text-amber-300"></iconify-icon>
+                <span class="shelf-name-en">Innerwear</span>
+                <span class="shelf-name-hi">इनरवियर</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5 items-start justify-start shelf-items" data-category="innerwear"></div>
+            </div>
+
+            <!-- Shelf 8: Winter Wear -->
+            <div class="almirah-shelf rounded-lg p-2 min-h-[90px] sm:min-h-[110px]" data-category="winter">
+              <span class="shelf-light-beam" aria-hidden="true"></span>
+              <div class="shelf-header-label mb-1 relative z-10">
+                <iconify-icon icon="mdi:snowflake" class="text-base text-amber-300"></iconify-icon>
+                <span class="shelf-name-en">Winter Wear</span>
+                <span class="shelf-name-hi">गर्म कपड़े</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5 items-start justify-start shelf-items" data-category="winter"></div>
+            </div>
+          </div>
+
+          <!-- Bottom Drawers -->
+          <div class="grid grid-cols-3 gap-2 mt-3">
+            <div class="almirah-drawer flex items-center justify-center py-2"><div class="drawer-handle"></div></div>
+            <div class="almirah-drawer flex items-center justify-center py-2"><div class="drawer-handle"></div></div>
+            <div class="almirah-drawer flex items-center justify-center py-2"><div class="drawer-handle"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Laundry Basket -->
+      <div class="w-full max-w-2xl">
+        <div class="glass rounded-2xl p-3">
+          <div class="flex items-center gap-2 mb-2">
+            <iconify-icon icon="mdi:basket" class="text-xl text-pink-500"></iconify-icon>
+            <span class="text-xs sm:text-sm font-extrabold text-slate-800">
+              Laundry Basket / <span class="text-amber-900 font-bold bg-amber-100/90 px-1.5 py-0.5 rounded border border-amber-300/60">कपड़ों की टोकरी</span> — Drag items to shelves above!
+            </span>
+          </div>
+          <div id="laundryBasket" class="flex flex-wrap gap-2 items-center justify-center min-h-[70px]"></div>
+        </div>
+      </div>
+
+      <div id="gameMessage" class="text-center min-h-[1.5rem] font-bold text-base" style="transition:opacity 0.3s;"></div>
+    </div>
+  </div>
+
+  <!-- ===== WIN SCREEN ===== -->
+  <div id="winScreen" class="absolute inset-0 hidden items-center justify-center p-4 overflow-y-auto" style="background:rgba(239,249,251,0.96);backdrop-filter:blur(10px);z-index:110;">
+    <div class="glass rounded-[2.5rem] p-6 sm:p-10 max-w-lg w-full text-center scale-in my-auto">
+      <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full flex items-center justify-center mb-4 bounce-in" style="background:linear-gradient(135deg,#d7a53b,#efaa73);box-shadow:0 0 60px rgba(251,191,36,0.6);">
+        <iconify-icon icon="mdi:trophy-award" class="text-4xl sm:text-5xl text-slate-800"></iconify-icon>
+      </div>
+
+      <div class="flex justify-center gap-2 mb-3" id="winStars">
+        <iconify-icon icon="mdi:star" class="text-4xl text-yellow-400 star-pop" style="animation-delay:0s;"></iconify-icon>
+        <iconify-icon icon="mdi:star" class="text-4xl text-yellow-400 star-pop" style="animation-delay:0.2s;"></iconify-icon>
+        <iconify-icon icon="mdi:star" class="text-4xl text-yellow-400 star-pop" style="animation-delay:0.4s;"></iconify-icon>
+      </div>
+
+      <h2 class="font-display font-black text-3xl sm:text-5xl mb-2">
+        You <span class="shimmer-text">Won!</span>
+      </h2>
+      <p class="text-slate-500 mb-3 text-sm sm:text-base">Amazing! You arranged the almirah perfectly!</p>
+
+      <div class="flex justify-center gap-3 mb-5">
+        <div class="glass px-4 py-2 rounded-full">
+          <span class="text-xs text-slate-500">Score</span>
+          <div class="font-bold text-lg" id="winScore">0</div>
+        </div>
+        <div class="glass px-4 py-2 rounded-full">
+          <span class="text-xs text-slate-500">Time Left</span>
+          <div class="font-bold text-lg" id="winTime">0s</div>
+        </div>
+      </div>
+
+      <div id="playerForm" class="mb-5 text-left">
+        <p class="text-sm text-slate-600 mb-3 text-center">📋 Confirm your name & email to claim promo code:</p>
+        <div class="space-y-3">
+          <input type="text" id="winPlayerName" placeholder="Your Name *" maxlength="60"
+            class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-pink-400 transition">
+          <input type="email" id="winPlayerEmail" placeholder="Email (optional)" maxlength="100"
+            class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-pink-400 transition">
+        </div>
+        <p id="formError" class="text-red-400 text-xs mt-2 hidden"></p>
+        <button onclick="claimPromo()" class="btn-shine w-full py-3.5 rounded-xl font-bold text-base mt-3 transition-all hover:scale-[1.02] shadow-lg" style="background:linear-gradient(135deg,#4ba988,#4aa9c3);">
+          <iconify-icon icon="mdi:ticket-confirmation" class="inline mr-2"></iconify-icon> Claim Promo Code
+        </button>
+      </div>
+
+      <div id="promoSection" class="mb-5 hidden">
+        <p class="text-sm text-slate-500 mb-2">🎉 Your Exclusive Promo Code 🎉</p>
+        <div class="glass rounded-2xl p-5 border-2 border-dashed border-yellow-400/50">
+          <div class="font-display font-black text-2xl sm:text-3xl promo-glow tracking-wider break-all" id="promoCode" style="color:#d7a53b;">
+            MODISH-XXXX-XXXX
+          </div>
+          <div class="text-sm text-slate-500 mt-2" id="promoDiscount">Save ₹500 on your next order!</div>
+        </div>
+        <button onclick="copyPromoCode()" id="copyBtn" class="btn-shine w-full py-3 rounded-full font-bold text-base mt-3 transition-all hover:scale-[1.02]" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);">
+          <iconify-icon icon="mdi:content-copy" class="inline mr-2"></iconify-icon> Copy Code & Shop Now
+        </button>
+      </div>
+
+      <div id="saveStatus" class="text-xs text-slate-500 mb-3 min-h-[1rem]"></div>
+
+      <div class="flex gap-3">
+        <button onclick="restartGame()" class="flex-1 py-3 rounded-full font-semibold glass transition-all hover:scale-[1.02]">
+          <iconify-icon icon="mdi:refresh" class="inline mr-1"></iconify-icon> Play Again
+        </button>
+        <button onclick="closeGame()" class="flex-1 py-3 rounded-full font-semibold glass transition-all hover:scale-[1.02]">
+          <iconify-icon icon="mdi:home" class="inline mr-1"></iconify-icon> Home
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LOSE SCREEN ===== -->
+  <div id="loseScreen" class="absolute inset-0 hidden items-center justify-center p-4" style="background:rgba(239,249,251,0.96);backdrop-filter:blur(10px);z-index:110;">
+    <div class="glass rounded-[2.5rem] p-8 sm:p-12 max-w-lg w-full text-center scale-in">
+      <div class="w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-6 bounce-in" style="background:linear-gradient(135deg,#ef4444,#efaa73);">
+        <iconify-icon icon="mdi:emoticon-sad" class="text-5xl text-slate-800"></iconify-icon>
+      </div>
+      <h2 class="font-display font-black text-4xl mb-3">Time's Up!</h2>
+      <p class="text-slate-500 mb-6">Don't worry! Try again and arrange the almirah faster this time.</p>
+
+      <div class="flex gap-3">
+        <button onclick="restartGame()" class="flex-1 py-4 rounded-full font-bold text-lg transition-all hover:scale-[1.02]" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);">
+          <iconify-icon icon="mdi:refresh" class="inline mr-1"></iconify-icon> Try Again
+        </button>
+        <button onclick="closeGame()" class="flex-1 py-4 rounded-full font-bold text-lg glass transition-all hover:scale-[1.02]">
+          <iconify-icon icon="mdi:home" class="inline mr-1"></iconify-icon> Home
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== JAVASCRIPT ===================== -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ===== PARTICLE CANVAS =====
+var canvas = document.getElementById('particleCanvas');
+var ctx = canvas.getContext('2d');
+var particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function Particle() {
+  this.reset();
+  this.y = Math.random() * canvas.height;
+}
+Particle.prototype.reset = function() {
+  this.x = Math.random() * canvas.width;
+  this.y = canvas.height + 10;
+  this.size = Math.random() * 4 + 1;
+  this.speedY = Math.random() * 1.5 + 0.5;
+  this.speedX = (Math.random() - 0.5) * 0.5;
+  this.opacity = Math.random() * 0.5 + 0.2;
+  var colors = ['#d7a53b','#68bfd4','#2b82ad','#4aa9c3','#4ba988','#efaa73'];
+  this.color = colors[Math.floor(Math.random() * colors.length)];
+};
+Particle.prototype.update = function() {
+  this.y -= this.speedY;
+  this.x += this.speedX;
+  if (this.y < -10) this.reset();
+};
+Particle.prototype.draw = function() {
+  ctx.beginPath();
+  ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+  ctx.fillStyle = this.color;
+  ctx.globalAlpha = this.opacity;
+  ctx.fill();
+  ctx.globalAlpha = 1;
+};
+
+for (var i = 0; i < 80; i++) particles.push(new Particle());
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(function(p) { p.update(); p.draw(); });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// ===== FLOATING CLOTH ICONS (increased quantity; no background almirah images) =====
+var clothEmojis = ['👕','👖','👗','🧥','👔','👚','👒','🧢','🧣','🧦','👜','👟','🥻','👡','👞','🧤','🕶️','👝','👑'];
+var floatingContainer = document.getElementById('floatingCloths');
+var CLOTH_COUNT = 64;
+for (var ci = 0; ci < CLOTH_COUNT; ci++) {
+  (function() {
+    var el = document.createElement('div');
+    el.className = 'cloth-icon';
+    el.textContent = clothEmojis[Math.floor(Math.random() * clothEmojis.length)];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.top = Math.random() * 100 + '%';
+    el.style.animation = 'float ' + (4 + Math.random() * 5) + 's ease-in-out infinite';
+    el.style.animationDelay = Math.random() * 3 + 's';
+    el.style.fontSize = (1.6 + Math.random() * 2.4) + 'rem';
+    el.style.opacity = (0.1 + Math.random() * 0.15).toString();
+    floatingContainer.appendChild(el);
+  })();
+}
+
+
+// ===== SCROLL REVEAL =====
+var revealObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) entry.target.classList.add('active');
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.observe(el); });
+
+// ===== NAVBAR SCROLL =====
+window.addEventListener('scroll', function() {
+  var navbar = document.getElementById('navbar');
+  if (window.scrollY > 50) {
+    navbar.style.background = 'rgba(244,251,252,0.88)';
+    navbar.style.backdropFilter = 'blur(20px)';
+    navbar.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+  } else {
+    navbar.style.background = 'transparent';
+    navbar.style.backdropFilter = 'none';
+    navbar.style.borderBottom = 'none';
+  }
+});
+
+function scrollToQR() {
+  document.getElementById('qr').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===== QR CODE =====
+function generateQR() {
+  var qrContainer = document.getElementById('qrcode');
+  var playUrl = window.location.href.split('#')[0] + '#play';
+  var img = document.createElement('img');
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&bgcolor=ffffff&color=1e1b4b&margin=10&data=' + encodeURIComponent(playUrl);
+  img.alt = 'Scan to Play';
+  img.style.width = '100%';
+  img.style.height = '100%';
+  img.style.borderRadius = '12px';
+  img.style.opacity = '0';
+  img.style.transition = 'opacity 0.5s ease';
+  img.onload = function() { img.style.opacity = '1'; };
+  qrContainer.appendChild(img);
+  img.onerror = function() {
+    qrContainer.innerHTML = '<div onclick="handlePlayClick()" class="w-full h-full flex flex-col items-center justify-center cursor-pointer" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);border-radius:12px;"><iconify-icon icon="mdi:qrcode" class="text-6xl text-slate-800 mb-2"></iconify-icon><span class="text-slate-800 text-sm font-bold">Tap to Play</span></div>';
+  };
+}
+generateQR();
+
+// ===== VERIFICATION & PASSWORD FLOW (One play per player, no refresh before password input) =====
+var currentVerifiedPhone = '';
+
+function handlePlayClick() {
+  // Show verification modal instead of refreshing or loading immediately
+  document.getElementById('verifyModal').classList.remove('hidden');
+  document.getElementById('verifyModal').classList.add('flex');
+  document.getElementById('passwordContainer').classList.add('hidden');
+  document.getElementById('verifyError').classList.add('hidden');
+  document.getElementById('verifyPhoneInput').value = '';
+  document.getElementById('accessPasswordInput').value = '';
+}
+
+function closeVerifyModal() {
+  document.getElementById('verifyModal').classList.add('hidden');
+  document.getElementById('verifyModal').classList.remove('flex');
+}
+
+function submitVerification() {
+  var phone = document.getElementById('verifyPhoneInput').value.trim();
+  var errEl = document.getElementById('verifyError');
+  var passContainer = document.getElementById('passwordContainer');
+  var password = document.getElementById('accessPasswordInput').value.trim();
+
+  if (!phone || phone.length < 7) {
+    errEl.textContent = 'Please enter a valid phone number.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  errEl.classList.add('hidden');
+
+  // If password container is visible, verify password
+  if (!passContainer.classList.contains('hidden')) {
+    if (!password) {
+      errEl.textContent = 'Please enter the access password.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    // Verify password via backend
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(function(isValid) {
+          if (isValid) {
+            currentVerifiedPhone = phone;
+            closeVerifyModal();
+            startGame();
+          } else {
+            errEl.textContent = 'Incorrect password. Please try again.';
+            errEl.classList.remove('hidden');
+          }
+        })
+        .withFailureHandler(function() {
+          // Fallback check
+          if (password === 'Modish2026!') {
+            currentVerifiedPhone = phone;
+            closeVerifyModal();
+            startGame();
+          } else {
+            errEl.textContent = 'Incorrect password.';
+            errEl.classList.remove('hidden');
+          }
+        })
+        .verifyPassword(password);
+    } else {
+      // Local fallback for standalone testing
+      if (password === 'Modish2026!') {
+        currentVerifiedPhone = phone;
+        closeVerifyModal();
+        startGame();
+      } else {
+        errEl.textContent = 'Incorrect password.';
+        errEl.classList.remove('hidden');
+      }
+    }
+    return;
+  }
+
+  // Check if player has already played using backend
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (res.hasPlayed) {
+          // Already played! Prompt for password WITHOUT refreshing the page / link
+          passContainer.classList.remove('hidden');
+          errEl.textContent = 'This number has already played on ' + res.lastPlayDate + '. Password required.';
+          errEl.classList.remove('hidden');
+        } else {
+          // First time player! Proceed directly to game
+          currentVerifiedPhone = phone;
+          closeVerifyModal();
+          startGame();
+        }
+      })
+      .withFailureHandler(function() {
+        // Fallback
+        currentVerifiedPhone = phone;
+        closeVerifyModal();
+        startGame();
+      })
+      .checkPlayerPlayed(phone);
+  } else {
+    // Standalone fallback
+    currentVerifiedPhone = phone;
+    closeVerifyModal();
+    startGame();
+  }
+}
+
+// ===== GAME DATA — 8 categories, 8 items (Bilingual: English + Hindi) =====
+var GAME_TIME_LIMIT = 90; // 1 minute 30 seconds
+var clothingData = [
+  { id: 1,  category: 'shirts',     emoji: '👕', label: 'T-Shirt',      labelHi: 'टी-शर्ट',    color: '#4aa9c3' },
+  { id: 2,  category: 'pants',      emoji: '👖', label: 'Jeans',        labelHi: 'जींस',       color: '#6366f1' },
+  { id: 3,  category: 'dresses',    emoji: '👗', label: 'Dress',        labelHi: 'ड्रेस',      color: '#68bfd4' },
+  { id: 4,  category: 'sarees',     emoji: '🥻', label: 'Saree',        labelHi: 'साड़ी',      color: '#efaa73' },
+  { id: 5,  category: 'footwear',   emoji: '👟', label: 'Sneakers',     labelHi: 'जूते',       color: '#4ba988' },
+  { id: 6,  category: 'accessories',emoji: '👜', label: 'Handbag',      labelHi: 'हैंडबैग',    color: '#d7a53b' },
+  { id: 7,  category: 'innerwear',  emoji: '🧦', label: 'Socks',        labelHi: 'मोज़े',      color: '#8b5cf6' },
+  { id: 8,  category: 'winter',     emoji: '🧥', label: 'Jacket',       labelHi: 'जैकेट',      color: '#3b82f6' }
+];
+
+var gameState = {
+  score: 0,
+  placed: 0,
+  total: clothingData.length,
+  timer: GAME_TIME_LIMIT,
+  timerInterval: null,
+  started: false,
+  currentPromoCode: '',
+  currentDiscountText: '',
+  stars: 0,
+  result: ''
+};
+
+var doorOpenTimeout = null;
+var doorCountdownInterval = null;
+var doorsAreOpen = false;
+
+function formatTime(totalSeconds) {
+  var safeSeconds = Math.max(0, Number(totalSeconds) || 0);
+  var minutes = Math.floor(safeSeconds / 60);
+  var seconds = safeSeconds % 60;
+  return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+}
+
+// ===== 5-SECOND ALMIRAH PREVIEW & DYNAMIC OPENING =====
+function startAlmirahOpeningSequence() {
+  doorsAreOpen = false;
+  var cabinet = document.getElementById('almirahCabinet');
+  cabinet.classList.remove('doors-open');
+
+  if (doorOpenTimeout) clearTimeout(doorOpenTimeout);
+  if (doorCountdownInterval) clearInterval(doorCountdownInterval);
+
+  var countdownSeconds = 5;
+  var badge = document.getElementById('doorCountdownBadge');
+  if (badge) {
+    badge.innerHTML = '<iconify-icon icon="mdi:lock-outline" class="text-base"></iconify-icon>' +
+                      '<span>Almirah opening in <strong class="text-sm" id="doorCountdownSec">' + countdownSeconds + '</strong>s...</span>';
+    badge.style.background = 'linear-gradient(135deg,#d7a53b,#efaa73)';
+    badge.style.color = '#2b1810';
+  }
+
+  doorCountdownInterval = setInterval(function() {
+    countdownSeconds--;
+    var secEl = document.getElementById('doorCountdownSec');
+    if (secEl) secEl.textContent = Math.max(0, countdownSeconds);
+    if (countdownSeconds <= 0) {
+      clearInterval(doorCountdownInterval);
+    }
+  }, 1000);
+
+  // Show closed almirah with logos for approx 5 seconds, then open doors and start timer
+  doorOpenTimeout = setTimeout(function() {
+    cabinet.classList.add('doors-open');
+    doorsAreOpen = true;
+    if (badge) {
+      badge.innerHTML = '<iconify-icon icon="mdi:lock-open-variant-outline" class="text-base"></iconify-icon>' +
+                        '<span>Doors Open! Arrange clothes / शेल्फ में कपड़े रखें!</span>';
+      badge.style.background = 'linear-gradient(135deg,#4ba988,#4aa9c3)';
+      badge.style.color = '#ffffff';
+    }
+    startTimer();
+  }, 5000);
+}
+
+// ===== START GAME =====
+function startGame() {
+  var overlay = document.getElementById('gameOverlay');
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  resetGame();
+
+  document.getElementById('gameContainer').style.display = 'flex';
+  document.getElementById('winScreen').classList.add('hidden');
+  document.getElementById('winScreen').classList.remove('flex');
+  document.getElementById('loseScreen').classList.add('hidden');
+  document.getElementById('loseScreen').classList.remove('flex');
+
+  // Start 5-second closed almirah preview before opening doors
+  startAlmirahOpeningSequence();
+}
+
+function resetGame() {
+  gameState = {
+    score: 0,
+    placed: 0,
+    total: clothingData.length,
+    timer: GAME_TIME_LIMIT,
+    timerInterval: null,
+    started: true,
+    currentPromoCode: '',
+    currentDiscountText: '',
+    stars: 0,
+    result: ''
+  };
+
+  document.querySelectorAll('.shelf-items').forEach(function(s) { s.innerHTML = ''; });
+  document.getElementById('gameMessage').textContent = '';
+  document.getElementById('gameTotal').textContent = gameState.total;
+
+  document.getElementById('playerForm').classList.remove('hidden');
+  document.getElementById('promoSection').classList.add('hidden');
+  document.getElementById('saveStatus').textContent = '';
+  document.getElementById('formError').classList.add('hidden');
+  document.getElementById('winPlayerName').value = '';
+  document.getElementById('winPlayerEmail').value = '';
+
+  updateGameUI();
+
+  var shuffled = clothingData.slice().sort(function() { return Math.random() - 0.5; });
+  var basket = document.getElementById('laundryBasket');
+  basket.innerHTML = '';
+  shuffled.forEach(function(item) {
+    basket.appendChild(createClothingItem(item));
+  });
+}
+
+function createClothingItem(item) {
+  var el = document.createElement('div');
+  el.className = 'clothing-item flex flex-col items-center justify-center rounded-xl p-1 sm:p-1.5';
+  el.style.width = '64px';
+  el.style.height = '64px';
+  el.style.background = 'linear-gradient(135deg, ' + item.color + '40, ' + item.color + '20)';
+  el.style.border = '2px solid ' + item.color + '80';
+  el.style.boxShadow = '0 4px 12px ' + item.color + '30';
+  el.dataset.id = item.id;
+  el.dataset.category = item.category;
+  el.innerHTML = '<span style="font-size:1.4rem;line-height:1;">' + item.emoji + '</span>' +
+                 '<span class="text-[8px] leading-none text-slate-900 font-extrabold mt-0.5 text-center">' + item.label + '</span>' +
+                 '<span class="text-[7.5px] leading-tight font-bold text-amber-950 bg-white/85 px-1 py-0.5 rounded mt-0.5 border border-amber-300/60 shadow-xs">' + item.labelHi + '</span>';
+  el.addEventListener('pointerdown', startDrag);
+  return el;
+}
+
+// ===== DRAG AND DROP =====
+var dragState = { element: null, offsetX: 0, offsetY: 0, currentDropTarget: null, originalElement: null };
+
+function startDrag(e) {
+  e.preventDefault();
+  var el = e.currentTarget;
+  if (el.classList.contains('placed')) return;
+
+  if (!doorsAreOpen) {
+    showGameMessage('⏳ Doors are opening in a moment / अलमारी खुल रही है...', '#d7a53b');
+    return;
+  }
+
+  var rect = el.getBoundingClientRect();
+  dragState.offsetX = e.clientX - rect.left;
+  dragState.offsetY = e.clientY - rect.top;
+
+  var clone = el.cloneNode(true);
+  clone.classList.add('dragging');
+  clone.style.position = 'fixed';
+  clone.style.left = rect.left + 'px';
+  clone.style.top = rect.top + 'px';
+  clone.style.width = rect.width + 'px';
+  clone.style.height = rect.height + 'px';
+  clone.style.pointerEvents = 'none';
+  clone.style.zIndex = '9999';
+  document.body.appendChild(clone);
+  dragState.element = clone;
+
+  el.style.opacity = '0.3';
+  dragState.originalElement = el;
+
+  document.addEventListener('pointermove', onDrag);
+  document.addEventListener('pointerup', endDrag);
+}
+
+function onDrag(e) {
+  if (!dragState.element) return;
+  e.preventDefault();
+
+  dragState.element.style.left = (e.clientX - dragState.offsetX) + 'px';
+  dragState.element.style.top = (e.clientY - dragState.offsetY) + 'px';
+
+  dragState.element.style.display = 'none';
+  var elementBelow = document.elementFromPoint(e.clientX, e.clientY);
+  dragState.element.style.display = '';
+
+  document.querySelectorAll('.almirah-shelf').forEach(function(s) {
+    s.classList.remove('drag-over', 'drag-over-wrong');
+  });
+
+  if (elementBelow) {
+    var shelf = elementBelow.closest('.almirah-shelf');
+    if (shelf) {
+      dragState.currentDropTarget = shelf;
+      var itemCategory = dragState.originalElement.dataset.category;
+      var shelfCategory = shelf.dataset.category;
+      if (itemCategory === shelfCategory) {
+        shelf.classList.add('drag-over');
+      } else {
+        shelf.classList.add('drag-over-wrong');
+      }
+    } else {
+      dragState.currentDropTarget = null;
+    }
+  } else {
+    dragState.currentDropTarget = null;
+  }
+}
+
+function endDrag(e) {
+  document.removeEventListener('pointermove', onDrag);
+  document.removeEventListener('pointerup', endDrag);
+
+  if (!dragState.element) return;
+
+  var originalEl = dragState.originalElement;
+  var itemCategory = originalEl.dataset.category;
+
+  if (dragState.currentDropTarget) {
+    var shelfCategory = dragState.currentDropTarget.dataset.category;
+    if (itemCategory === shelfCategory) {
+      handleCorrectPlacement(originalEl, dragState.currentDropTarget);
+    } else {
+      handleWrongPlacement(originalEl);
+    }
+  } else {
+    originalEl.style.opacity = '1';
+  }
+
+  document.querySelectorAll('.almirah-shelf').forEach(function(s) {
+    s.classList.remove('drag-over', 'drag-over-wrong');
+  });
+  if (dragState.element && dragState.element.parentNode) {
+    dragState.element.remove();
+  }
+  dragState.element = null;
+  dragState.currentDropTarget = null;
+}
+
+function handleCorrectPlacement(originalEl, shelf) {
+  var shelfItems = shelf.querySelector('.shelf-items');
+  originalEl.style.opacity = '1';
+  originalEl.classList.add('placed', 'correct-pop', 'placed-glow');
+  shelfItems.appendChild(originalEl);
+
+  gameState.placed++;
+  var points = 100 + Math.floor(gameState.timer * 2);
+  gameState.score += points;
+
+  showGameMessage('✅ Perfect! +' + points + ' points!', '#4ba988');
+  createBurst(shelf);
+  updateGameUI();
+
+  if (gameState.placed >= gameState.total) {
+    setTimeout(function() { winGame(); }, 800);
+  }
+}
+
+function handleWrongPlacement(originalEl) {
+  originalEl.style.opacity = '1';
+  originalEl.classList.add('wrong-shake');
+  setTimeout(function() { originalEl.classList.remove('wrong-shake'); }, 500);
+  gameState.score = Math.max(0, gameState.score - 20);
+  showGameMessage("❌ Oops! That doesn't go there! -20 points", '#ef4444');
+  updateGameUI();
+}
+
+function showGameMessage(msg, color) {
+  var el = document.getElementById('gameMessage');
+  el.textContent = msg;
+  el.style.color = color;
+  el.style.opacity = '1';
+  clearTimeout(el.timeoutId);
+  el.timeoutId = setTimeout(function() { el.style.opacity = '0'; }, 2000);
+}
+
+function createBurst(target) {
+  var rect = target.getBoundingClientRect();
+  var cx = rect.left + rect.width / 2;
+  var cy = rect.top + rect.height / 2;
+  var colors = ['#4ba988','#d7a53b','#68bfd4','#4aa9c3','#2b82ad'];
+  for (var i = 0; i < 20; i++) {
+    var p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = cx + 'px';
+    p.style.top = cy + 'px';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.borderRadius = '50%';
+    p.style.width = '8px';
+    p.style.height = '8px';
+    document.body.appendChild(p);
+    var angle = (Math.PI * 2 * i) / 20;
+    var velocity = 100 + Math.random() * 100;
+    var dx = Math.cos(angle) * velocity;
+    var dy = Math.sin(angle) * velocity;
+    p.animate([
+      { transform: 'translate(0,0) scale(1)', opacity: 1 },
+      { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(0)', opacity: 0 }
+    ], { duration: 800, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)' });
+    (function(piece) { setTimeout(function() { piece.remove(); }, 800); })(p);
+  }
+}
+
+function launchConfetti() {
+  var colors = ['#d7a53b','#68bfd4','#2b82ad','#4aa9c3','#4ba988','#efaa73'];
+  for (var i = 0; i < 150; i++) {
+    (function(idx) {
+      setTimeout(function() {
+        var p = document.createElement('div');
+        p.className = 'confetti-piece';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.top = '-20px';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        var shapes = ['50%','0','0','50%'];
+        p.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
+        p.style.width = (6 + Math.random() * 8) + 'px';
+        p.style.height = (6 + Math.random() * 8) + 'px';
+        document.body.appendChild(p);
+        var duration = 2000 + Math.random() * 2000;
+        var drift = (Math.random() - 0.5) * 300;
+        p.animate([
+          { transform: 'translateY(0) translateX(0) rotate(0deg)', opacity: 1 },
+          { transform: 'translateY(110vh) translateX(' + drift + 'px) rotate(' + (720 * Math.random()) + 'deg)', opacity: 0 }
+        ], { duration: duration, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)' });
+        setTimeout(function() { p.remove(); }, duration);
+      }, idx * 20);
+    })(i);
+  }
+}
+
+function updateGameUI() {
+  document.getElementById('gameScore').textContent = gameState.score;
+  document.getElementById('gameProgress').textContent = gameState.placed;
+  document.getElementById('gameTotal').textContent = gameState.total;
+  document.getElementById('gameTimer').textContent = formatTime(gameState.timer);
+  var pct = (gameState.placed / gameState.total) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function startTimer() {
+  if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+  gameState.timerInterval = setInterval(function() {
+    gameState.timer--;
+    document.getElementById('gameTimer').textContent = formatTime(gameState.timer);
+    var timerEl = document.getElementById('gameTimer');
+    if (gameState.timer <= 10) {
+      timerEl.style.color = '#ef4444';
+      timerEl.parentElement.style.animation = 'pulseGlow 0.5s ease-in-out infinite';
+    } else if (gameState.timer <= 20) {
+      timerEl.style.color = '#d7a53b';
+    }
+    if (gameState.timer <= 0) {
+      clearInterval(gameState.timerInterval);
+      loseGame();
+    }
+  }, 1000);
+}
+
+function winGame() {
+  clearInterval(gameState.timerInterval);
+  gameState.result = 'win';
+
+  var discounts = [
+    { text: 'Save ₹500 on your next order!' },
+    { text: 'Save ₹200 on your next order!' },
+    { text: 'Save ₹700 on your next order!' },
+    { text: 'Save ₹300 on your next order!' }
+  ];
+  var discount = discounts[Math.floor(Math.random() * discounts.length)];
+  gameState.currentPromoCode = generatePromoCode();
+  gameState.currentDiscountText = discount.text;
+
+  gameState.stars = 3;
+  if (gameState.timer < 20) gameState.stars = 2;
+  if (gameState.timer < 10) gameState.stars = 1;
+
+  document.getElementById('winScore').textContent = gameState.score;
+  document.getElementById('winTime').textContent = formatTime(gameState.timer);
+
+  var stars = document.getElementById('winStars');
+  stars.children[2].style.display = gameState.stars >= 3 ? '' : 'none';
+  stars.children[1].style.display = gameState.stars >= 2 ? '' : 'none';
+
+  document.getElementById('winScreen').classList.remove('hidden');
+  document.getElementById('winScreen').classList.add('flex');
+
+  launchConfetti();
+  setTimeout(function() { launchConfetti(); }, 1000);
+}
+
+function loseGame() {
+  gameState.result = 'lose';
+  document.getElementById('loseScreen').classList.remove('hidden');
+  document.getElementById('loseScreen').classList.add('flex');
+}
+
+function generatePromoCode() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  function part(n) {
+    var s = '';
+    for (var i = 0; i < n; i++) { s += chars[Math.floor(Math.random() * chars.length)]; }
+    return s;
+  }
+  return 'MODISH-' + part(4) + '-' + part(4);
+}
+
+function claimPromo() {
+  var name = document.getElementById('winPlayerName').value.trim();
+  var email = document.getElementById('winPlayerEmail').value.trim();
+  var errEl = document.getElementById('formError');
+
+  if (!name) {
+    errEl.textContent = 'Please enter your name.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  errEl.classList.add('hidden');
+
+  var data = {
+    playerName: name,
+    phone: currentVerifiedPhone || 'Unknown',
+    email: email,
+    score: gameState.score,
+    timeLeft: gameState.timer,
+    placed: gameState.placed,
+    total: gameState.total,
+    result: gameState.result,
+    stars: gameState.stars,
+    promoCode: gameState.currentPromoCode,
+    discountText: gameState.currentDiscountText
+  };
+
+  var statusEl = document.getElementById('saveStatus');
+  statusEl.textContent = '⏳ Saving your data to Google Sheet...';
+
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (res.success) {
+          statusEl.textContent = '✅ ' + res.message + ' (Row #' + res.row + ')';
+        } else {
+          statusEl.textContent = '⚠️ ' + res.message;
+        }
+        document.getElementById('playerForm').classList.add('hidden');
+        document.getElementById('promoSection').classList.remove('hidden');
+        document.getElementById('promoCode').textContent = gameState.currentPromoCode;
+        document.getElementById('promoDiscount').textContent = gameState.currentDiscountText;
+      })
+      .withFailureHandler(function(err) {
+        statusEl.textContent = '⚠️ Saved locally.';
+        document.getElementById('playerForm').classList.add('hidden');
+        document.getElementById('promoSection').classList.remove('hidden');
+        document.getElementById('promoCode').textContent = gameState.currentPromoCode;
+        document.getElementById('promoDiscount').textContent = gameState.currentDiscountText;
+      })
+      .saveGamePlay(data);
+  } else {
+    statusEl.textContent = '✅ Saved successfully!';
+    document.getElementById('playerForm').classList.add('hidden');
+    document.getElementById('promoSection').classList.remove('hidden');
+    document.getElementById('promoCode').textContent = gameState.currentPromoCode;
+    document.getElementById('promoDiscount').textContent = gameState.currentDiscountText;
+  }
+}
+
+function copyPromoCode() {
+  var code = gameState.currentPromoCode;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(function() {
+      showCopied();
+    }).catch(function() { fallbackCopy(code); });
+  } else {
+    fallbackCopy(code);
+  }
+}
+function fallbackCopy(code) {
+  var ta = document.createElement('textarea');
+  ta.value = code;
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+  showCopied();
+}
+function showCopied() {
+  var btn = document.getElementById('copyBtn');
+  btn.innerHTML = '<iconify-icon icon="mdi:check" class="inline mr-2"></iconify-icon> Copied! Go Shop!';
+  btn.style.background = 'linear-gradient(135deg,#4ba988,#4aa9c3)';
+  setTimeout(function() {
+    btn.innerHTML = '<iconify-icon icon="mdi:content-copy" class="inline mr-2"></iconify-icon> Copy Code & Shop Now';
+    btn.style.background = 'linear-gradient(135deg,#2b82ad,#68bfd4)';
+  }, 3005);
+}
+
+function restartGame() {
+  document.getElementById('winScreen').classList.add('hidden');
+  document.getElementById('winScreen').classList.remove('flex');
+  document.getElementById('loseScreen').classList.add('hidden');
+  document.getElementById('loseScreen').classList.remove('flex');
+  var timerEl = document.getElementById('gameTimer');
+  timerEl.style.color = '';
+  timerEl.parentElement.style.animation = '';
+  resetGame();
+  
+  // Re-run 5-second closed almirah preview before opening doors on restart
+  startAlmirahOpeningSequence();
+}
+
+function closeGame() {
+  if (doorOpenTimeout) clearTimeout(doorOpenTimeout);
+  if (doorCountdownInterval) clearInterval(doorCountdownInterval);
+  clearInterval(gameState.timerInterval);
+  var overlay = document.getElementById('gameOverlay');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  document.getElementById('winScreen').classList.add('hidden');
+  document.getElementById('winScreen').classList.remove('flex');
+  document.getElementById('loseScreen').classList.add('hidden');
+  document.getElementById('loseScreen').classList.remove('flex');
+}
+
+if (window.location.hash === '#play') {
+  setTimeout(function() { handlePlayClick(); }, 500);
+}
+
+document.addEventListener('contextmenu', function(e) {
+  if (e.target.closest('.clothing-item')) e.preventDefault();
+});
+</script>
+
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2f031d64b63e59b',t:'MTc4NzM4NDA2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a31268361d7b59a6',t:'MTc4Nzc0MjgwNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
