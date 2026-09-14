@@ -410,6 +410,12 @@
   }
   .promo-glow { animation: promoGlow 2s ease-in-out infinite; }
 
+  @keyframes reminderPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.035); }
+  }
+  .reminder-pulse { animation: reminderPulse 1.6s ease-in-out infinite; display: inline-block; }
+
   @keyframes scaleIn {
     from { transform: scale(0.8); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
@@ -1269,7 +1275,7 @@
         <h4 class="font-bold mb-4 text-sm uppercase tracking-wide text-slate-400">Company</h4>
         <div class="space-y-2 text-sm text-slate-500">
           <div>Bharat Krishi Farm, Khasra no - 103, near Bank of Baroda , Seva Dham Road, Mandoli - 110093</div>
-          <div>🖂 <a href="/cdn-cgi/l/email-protection#5835373c312b303d362c3d2a282a312b3d2b2b183f35393134763b3735" class="mail-link"><span class="__cf_email__" data-cfemail="3d505259544e55585349584f4d4f544e584e4e7d5a505c5451135e5250">[modishenterprisess@gmail.com]</span></a></div>
+          <div>🖂 <a href="/cdn-cgi/l/email-protection#5835373c312b303d362c3d2a282a312b3d2b2b183f35393134763b3735" class="mail-link"><span class="__cf_email__" data-cfemail="3d505259544e55585349584f4d4f544e584e4e7d5a505c5451135e5250">[<span class="__cf_email__" data-cfemail="4f22202b263c272a213b2a3d3f3d263c2a3c3c0f28222e2623612c2022">[email&#160;protected]</span>]</span></a></div>
           <div>📞 <a href="tel:+919643996464" class="hover:text-sky-700 transition" style="color:#2b6078;">+91 9643996464</a></div>
           <div>📞 <a href="tel:+919643996565" class="hover:text-sky-700 transition" style="color:#2b6078;">+91 9643996565</a></div>
         </div>
@@ -1581,6 +1587,37 @@
           </div>
           <div class="text-sm text-slate-500 mt-2" id="promoDiscount">Save ₹500 on your next order!</div>
         </div>
+
+        <!-- ===== HOW TO REDEEM — Screenshot reminder for the winner ===== -->
+        <div id="redeemSteps" class="rounded-2xl p-4 mt-4 text-left border-2" style="background:linear-gradient(135deg,rgba(255,248,232,0.97),rgba(240,250,252,0.97));border-color:rgba(215,165,59,0.65);box-shadow:0 0 28px rgba(215,165,59,0.28);">
+          <p class="reminder-pulse font-display font-black text-base sm:text-lg text-center mb-0.5" style="color:#b8860b;">
+            📸 Take a Screenshot of this Coupon!
+          </p>
+          <p class="text-center text-xs sm:text-sm font-bold mb-3" style="color:#8a6d1f;">
+            महत्वपूर्ण: इस कूपन स्क्रीन का स्क्रीनशॉट लें!
+          </p>
+          <ol class="space-y-2.5 text-xs sm:text-sm text-slate-700">
+            <li class="flex items-start gap-2.5">
+              <span class="font-black shrink-0 w-5 h-5 mt-0.5 rounded-full flex items-center justify-center text-white text-[11px]" style="background:#2b82ad;">1</span>
+              <span><b>Screenshot this entire window right now</b> — it shows your winning code &amp; discount.<br>
+              <span class="text-slate-500">अभी इस पूरी स्क्रीन का स्क्रीनशॉट लें — इसमें आपका विनिंग कोड और डिस्काउंट दिख रहा है।</span></span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-black shrink-0 w-5 h-5 mt-0.5 rounded-full flex items-center justify-center text-white text-[11px]" style="background:#4ba988;">2</span>
+              <span><b>Send the screenshot to the Modish Enterprises store</b> (seller/vendor) — on WhatsApp, or show it at the shop when you buy.<br>
+              <span class="text-slate-500">स्क्रीनशॉट मोदिश एंटरप्राइज़ की दुकान (विक्रेता) को WhatsApp पर भेजें या खरीदारी के समय दिखाएँ।</span></span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-black shrink-0 w-5 h-5 mt-0.5 rounded-full flex items-center justify-center text-white text-[11px]" style="background:#d7a53b;">3</span>
+              <span>The store will <b>verify &amp; redeem your coupon</b> and apply the discount to your order.<br>
+              <span class="text-slate-500">दुकान आपका कूपन वेरिफाई करके डिस्काउंट लागू कर देगी।</span></span>
+            </li>
+          </ol>
+          <p class="text-center text-[11px] sm:text-xs font-bold mt-3 pt-2" style="color:#b8860b;border-top:1px dashed rgba(215,165,59,0.5);">
+            ⚠️ Without the screenshot, the store cannot redeem your code! &nbsp;|&nbsp; स्क्रीनशॉट के बिना कोड रीडीम नहीं होगा!
+          </p>
+        </div>
+
         <button onclick="copyPromoCode()" id="copyBtn" class="btn-shine w-full py-3 rounded-full font-bold text-base mt-3 transition-all hover:scale-[1.02]" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);">
           <iconify-icon icon="mdi:content-copy" class="inline mr-2"></iconify-icon> Copy Code & Shop Now
         </button>
@@ -1703,7 +1740,7 @@
 </div>
 
 <!-- ===================== JAVASCRIPT ===================== -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ===== PARTICLE CANVAS =====
 var canvas = document.getElementById('particleCanvas');
 var ctx = canvas.getContext('2d');
@@ -2422,7 +2459,7 @@ function fallbackCopy(code) {
 }
 function showCopied() {
   var btn = document.getElementById('copyBtn');
-  btn.innerHTML = '<iconify-icon icon="mdi:check" class="inline mr-2"></iconify-icon> Copied! Go Shop!';
+  btn.innerHTML = '<iconify-icon icon="mdi:check" class="inline mr-2"></iconify-icon> Copied! 📸 Screenshot &amp; Send to Store!';
   btn.style.background = 'linear-gradient(135deg,#4ba988,#4aa9c3)';
   setTimeout(function() {
     btn.innerHTML = '<iconify-icon icon="mdi:content-copy" class="inline mr-2"></iconify-icon> Copy Code & Shop Now';
@@ -2973,5 +3010,5 @@ function initMiniInaug() {
 ceremonyCrowd(document.getElementById('inaugOverlay'));
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMiniInaug); else initMiniInaug();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a39d47e3cf92d9c0',t:'MTc4OTE5OTAwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a39d47e3cf92d9c0',t:'MTc4OTE5OTAwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3ad2b979dc424b2',t:'MTc4OTM2NTYxNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
