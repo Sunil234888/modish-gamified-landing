@@ -590,13 +590,420 @@
     *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
   }
 
+
+  /* ============================================================
+     ✦ ENHANCED ANIMATION SYSTEM — landing page upgrade ✦
+     ============================================================ */
+  @property --beam-angle { syntax:'<angle>'; initial-value:0deg; inherits:false; }
+  html { scroll-behavior:smooth; }
+
+  /* ---- scroll progress, cursor spotlight, back-to-top, nav shadow ---- */
+  #scrollProgress { position:fixed; top:0; left:0; height:3px; width:0%; z-index:70;
+    background:linear-gradient(90deg,#2b82ad,#4aa9c3,#68bfd4,#d7a53b,#efaa73);
+    box-shadow:0 0 12px rgba(104,191,212,.85); }
+  #cursorGlow { position:fixed; left:0; top:0; width:420px; height:420px; border-radius:50%;
+    pointer-events:none; z-index:1; opacity:.8; mix-blend-mode:multiply;
+    background:radial-gradient(closest-side, rgba(104,191,212,.20), rgba(43,130,173,.10) 45%, transparent 72%); }
+  @media (hover:none), (pointer:coarse) { #cursorGlow { display:none; } }
+  #toTopBtn { position:fixed; right:20px; bottom:20px; z-index:65; width:48px; height:48px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.88);
+    border:1px solid rgba(62,146,174,.32); box-shadow:0 10px 28px rgba(47,112,139,.22);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    opacity:0; transform:translateY(18px) scale(.8); pointer-events:none;
+    transition:all .45s cubic-bezier(.22,.8,.26,.99); }
+  #toTopBtn.show { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+  #toTopBtn:hover { transform:translateY(-4px) scale(1.1); background:#fff; box-shadow:0 14px 34px rgba(43,130,173,.35); }
+  .nav-solid { box-shadow:0 10px 30px rgba(47,112,139,.12); }
+
+  /* ---- hero entrance: masked line rise + soft staggered rises ---- */
+  .line-mask { display:block; overflow:hidden; padding-bottom:.08em; margin-bottom:-.04em; }
+  .line-inner { display:block; animation:lineRise .95s cubic-bezier(.22,.8,.26,.99) both; }
+  .line-mask .line-inner.shimmer-text { animation:lineRise .95s cubic-bezier(.22,.8,.26,.99) both, shimmerMove 4s linear infinite 1s; }
+  .line-inner.d1 { animation-delay:.14s; }
+  .line-inner.d2 { animation-delay:.28s; }
+  @keyframes lineRise { from { transform:translateY(112%) rotate(3deg); opacity:0; } to { transform:translateY(0) rotate(0); opacity:1; } }
+  .rise-soft { animation:riseSoft .9s cubic-bezier(.22,.8,.26,.99) both; }
+  .rise-soft.s1 { animation-delay:.5s; }
+  .rise-soft.s2 { animation-delay:.62s; }
+  .rise-soft.s3 { animation-delay:.74s; }
+  @keyframes riseSoft { from { opacity:0; transform:translateY(26px); } to { opacity:1; transform:none; } }
+
+  /* ---- marquee: fade edges + pause on hover ---- */
+  .marquee-wrap { -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+                  mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent); }
+  .marquee-wrap:hover .marquee-track { animation-play-state:paused; }
+
+  /* ---- background layer mouse parallax ---- */
+  #orbLayer, #floatingCloths { transition:transform .8s cubic-bezier(.22,.8,.26,.99); will-change:transform; }
+
+  /* ---- magnetic CTA buttons ---- */
+  .mag { transition:transform .18s ease-out; }
+
+  /* ---- 3D tilt cards + pointer glare + conic beam border ---- */
+  .tilt-inner { transition:transform .45s cubic-bezier(.22,.61,.36,1); will-change:transform; }
+  .tilt-glare { position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0;
+    transition:opacity .35s ease; z-index:6;
+    background:radial-gradient(420px circle at var(--gx,50%) var(--gy,50%), rgba(255,255,255,.62), rgba(255,255,255,0) 42%); }
+  .beam-edge { position:relative; }
+  .beam-edge::before { content:''; position:absolute; inset:-2px; border-radius:inherit; padding:2px;
+    background:conic-gradient(from var(--beam-angle), transparent 0deg, rgba(104,191,212,.95) 55deg, rgba(215,165,59,.95) 115deg, transparent 190deg, transparent 360deg);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite:exclude;
+    opacity:0; transition:opacity .45s ease; pointer-events:none; z-index:7;
+    animation:beamSpin 4s linear infinite; }
+  .beam-edge:hover::before { opacity:1; }
+  @keyframes beamSpin { to { --beam-angle:360deg; } }
+
+  /* ===== ✦ PREMIUM SHOWCASE — the product collection ===== */
+  .product-card { overflow:visible; }
+  .product-card .product-image-wrap { position:relative; border-radius:calc(1.5rem - 1px) calc(1.5rem - 1px) 0 0;
+    animation:imgBob 5.5s ease-in-out infinite;
+    background:
+      radial-gradient(85% 65% at 50% 88%, rgba(104,191,212,.28), transparent 62%),
+      radial-gradient(60% 45% at 50% 0%, rgba(215,165,59,.16), transparent 60%),
+      linear-gradient(135deg,#eef9fb,#fffaf4); }
+  .product-card:nth-child(2) .product-image-wrap { animation-delay:.6s; }
+  .product-card:nth-child(3) .product-image-wrap { animation-delay:1.2s; }
+  .product-card:nth-child(4) .product-image-wrap { animation-delay:.3s; }
+  .product-card:nth-child(5) .product-image-wrap { animation-delay:.9s; }
+  .product-card:nth-child(6) .product-image-wrap { animation-delay:1.5s; }
+  @keyframes imgBob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
+  /* product pops toward the cursor with parallax, lifts + tilts on hover */
+  .product-card .product-image-wrap img { position:relative; z-index:1;
+    transform:translate(calc(var(--px,0)*6px), calc(var(--py,0)*6px)) scale(1.045);
+    transition:transform .3s cubic-bezier(.22,.61,.36,1), filter .3s ease; }
+  .product-card:hover .product-image-wrap img {
+    transform:translate(calc(var(--px,0)*13px), calc(var(--py,0)*13px - 9px)) scale(1.14) rotate(-1.3deg);
+    filter:drop-shadow(0 18px 22px rgba(23,63,87,.30)); }
+  /* glossy sheen sweeping across each product, staggered card by card */
+  .product-image-wrap::before { content:''; position:absolute; top:-30%; bottom:-30%; left:0; width:42%;
+    background:linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 50%, rgba(255,255,255,0) 100%);
+    transform:translateX(-170%) skewX(-14deg); animation:sheenSweep 5.6s ease-in-out infinite;
+    pointer-events:none; z-index:3; }
+  @keyframes sheenSweep { 0%,52% { transform:translateX(-170%) skewX(-14deg); } 82%,100% { transform:translateX(360%) skewX(-14deg); } }
+  .product-card:nth-child(1) .product-image-wrap::before { animation-delay:.2s; }
+  .product-card:nth-child(2) .product-image-wrap::before { animation-delay:1.1s; }
+  .product-card:nth-child(3) .product-image-wrap::before { animation-delay:2s; }
+  .product-card:nth-child(4) .product-image-wrap::before { animation-delay:.65s; }
+  .product-card:nth-child(5) .product-image-wrap::before { animation-delay:1.55s; }
+  .product-card:nth-child(6) .product-image-wrap::before { animation-delay:2.45s; }
+  /* soft floor spotlight that intensifies on hover */
+  .product-image-wrap::after { content:''; position:absolute; left:50%; bottom:12px; width:56%; height:16px;
+    transform:translateX(-50%); border-radius:50%;
+    background:radial-gradient(50% 50% at 50% 50%, rgba(23,63,87,.38), rgba(23,63,87,0) 70%);
+    filter:blur(7px); opacity:.5; transition:all .45s ease; z-index:0; pointer-events:none; }
+  .product-card:hover .product-image-wrap::after { width:72%; opacity:.85; bottom:8px; }
+  .product-card-body { position:relative; z-index:2;
+    background:linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.88));
+    border-radius:0 0 calc(1.5rem - 1px) calc(1.5rem - 1px); }
+  .product-card h3 { transition:color .3s ease; }
+  .product-card:hover h3 { color:#2b82ad; }
+  /* kicker grows a gradient underline on hover */
+  .product-kicker { position:relative; padding-bottom:7px; }
+  .product-kicker::after { content:''; position:absolute; left:0; bottom:0; height:2.5px; width:0; border-radius:2px;
+    background:linear-gradient(90deg,#d7a53b,#2b82ad); transition:width .45s cubic-bezier(.22,.8,.26,.99); }
+  .product-card:hover .product-kicker::after { width:56px; }
+  /* explore link becomes a glowing pill */
+  .product-link { display:inline-flex; align-items:center; gap:6px; padding:.55rem 1.05rem; border-radius:999px;
+    background:linear-gradient(135deg,#2b82ad,#4aa9c3); color:#ffffff !important; font-weight:800; font-size:.82rem;
+    letter-spacing:.02em; box-shadow:0 8px 20px rgba(43,130,173,.30);
+    transition:all .35s cubic-bezier(.22,.8,.26,.99); }
+  .product-card:hover .product-link { background:linear-gradient(135deg,#d7a53b,#efaa73);
+    box-shadow:0 12px 26px rgba(215,165,59,.42); transform:translateY(-2px); }
+  .product-card:hover .product-link span { transform:translate(3px,-3px); }
+  /* category sticker pops in on hover (always gently floating on touch devices) */
+  .card-sticker { position:absolute; top:10px; right:10px; width:42px; height:42px; border-radius:14px;
+    display:flex; align-items:center; justify-content:center; font-size:21px;
+    background:rgba(255,255,255,.92); border:1px solid rgba(62,146,174,.22);
+    box-shadow:0 6px 18px rgba(23,63,87,.16); transform:rotate(9deg) scale(0);
+    transition:transform .5s cubic-bezier(.34,1.56,.64,1); z-index:5; pointer-events:none; }
+  .product-card:hover .card-sticker { transform:rotate(-7deg) scale(1); }
+  @media (hover:none) {
+    .card-sticker { transform:rotate(9deg) scale(1); }
+    .card-sticker.float { animation:stickerFloat 3.4s ease-in-out infinite; }
+  }
+  @keyframes stickerFloat { 0%,100% { transform:rotate(5deg) translateY(0) scale(1); } 50% { transform:rotate(12deg) translateY(-3px) scale(1.06); } }
+  /* aurora light field behind the showcase grid */
+  .section-aurora { position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:-1; }
+  .section-aurora span { position:absolute; border-radius:50%; filter:blur(95px); opacity:.30; }
+  .section-aurora span:nth-child(1) { width:520px; height:520px; left:-8%; top:-12%; background:#68bfd4; animation:auroraA 19s ease-in-out infinite; }
+  .section-aurora span:nth-child(2) { width:460px; height:460px; right:-6%; bottom:-14%; background:#d7a53b; animation:auroraB 23s ease-in-out infinite; }
+  .section-aurora span:nth-child(3) { width:380px; height:380px; right:18%; top:22%; background:#4ba988; opacity:.22; animation:auroraC 27s ease-in-out infinite; }
+  @keyframes auroraA { 0%,100% { transform:translate(0,0) scale(1); } 50% { transform:translate(90px,70px) scale(1.15); } }
+  @keyframes auroraB { 0%,100% { transform:translate(0,0) scale(1.1); } 50% { transform:translate(-110px,-60px) scale(.95); } }
+  @keyframes auroraC { 0%,100% { transform:translate(0,0) scale(1); } 50% { transform:translate(60px,-90px) scale(1.2); } }
+
+  /* ---- QR section: expanding pulse rings ---- */
+  .qr-wrap { position:relative; display:inline-block; }
+  .qr-ring { position:absolute; left:50%; top:50%; width:230px; height:230px; margin:-115px 0 0 -115px;
+    border-radius:50%; border:2px solid rgba(43,130,173,.32);
+    animation:qrRingPulse 3s ease-out infinite; pointer-events:none; }
+  .qr-ring.d2 { animation-delay:1s; border-color:rgba(215,165,59,.32); }
+  .qr-ring.d3 { animation-delay:2s; border-color:rgba(74,169,195,.30); }
+  @keyframes qrRingPulse { 0% { transform:scale(.8); opacity:0; } 15% { opacity:.95; } 100% { transform:scale(1.65); opacity:0; } }
+
+  /* ---- visible e-mail link in footer ---- */
+  .mail-link { color:#2b82ad; font-weight:700; position:relative; transition:color .25s ease; }
+  .mail-link::after { content:''; position:absolute; left:0; bottom:-2px; height:2px; width:0;
+    background:linear-gradient(90deg,#d7a53b,#2b82ad); transition:width .35s cubic-bezier(.22,.8,.26,.99); }
+  .mail-link:hover { color:#d7a53b; }
+  .mail-link:hover::after { width:100%; }
+  /* ============================================================ */
+
+  /* ============================================================
+     INAUGURATION CEREMONY - pre-game almirah launch show
+     ============================================================ */
+  #inaugOverlay { position:fixed; inset:0; z-index:130; display:none; overflow:hidden;
+    font-family:'Outfit',sans-serif; color:#173f57;
+    background:radial-gradient(130% 100% at 50% 0%, rgba(255,249,231,.97), rgba(236,249,252,.98) 55%, rgba(214,238,245,.99));
+    opacity:0; transition:opacity .5s ease; }
+  .ceremony.active { display:flex; align-items:center; justify-content:center; }
+  .ceremony.active.in { opacity:1; }
+  .ceremony.out { opacity:0; }
+  .spot { position:absolute; top:-8%; width:34vmax; height:92vmax; pointer-events:none; opacity:.38; z-index:1;
+    background:linear-gradient(180deg, rgba(255,225,140,.5), rgba(255,225,140,0) 68%);
+    clip-path:polygon(44% 0, 56% 0, 86% 100%, 14% 100%); }
+  .spot.s1 { left:4%; transform-origin:50% 0; animation:spotSway 5.2s ease-in-out infinite; }
+  .spot.s2 { right:4%; transform-origin:50% 0; animation:spotSway 6.1s ease-in-out -2.6s infinite; }
+  @keyframes spotSway { 0%,100% { transform:rotate(-6deg); } 50% { transform:rotate(5deg); } }
+  .stage-floor { position:absolute; left:50%; bottom:15%; width:min(84vw,660px); height:130px; transform:translateX(-50%);
+    background:radial-gradient(50% 50% at 50% 50%, rgba(255,205,95,.5), rgba(255,205,95,0) 72%); z-index:1; }
+  .banner { position:absolute; top:2.6vh; left:50%; transform:translateY(-50px) scale(.85); opacity:0; z-index:25; text-align:center; }
+  .ceremony.active .banner { animation:bannerIn .85s cubic-bezier(.2,.8,.26,1.1) .1s forwards; }
+  @keyframes bannerIn { to { transform:translateY(0) scale(1); opacity:1; } }
+  .banner .b-tag { display:inline-block; font-family:'Bricolage Grotesque',sans-serif; font-weight:800;
+    background:linear-gradient(135deg,#2b82ad,#68bfd4); color:#fff; padding:.42rem 1.3rem; border-radius:999px;
+    font-size:clamp(1.05rem,2.8vw,1.55rem); box-shadow:0 14px 34px rgba(43,130,173,.35); letter-spacing:.04em; }
+  .banner .b-sub { display:block; margin-top:.55rem; font-size:clamp(.78rem,1.8vw,1rem); font-weight:700; color:#5d7888; }
+  .b-stars { position:absolute; inset:-26px -12px; pointer-events:none; }
+  .b-stars span { position:absolute; font-size:20px; animation:twinkle 1.7s ease-in-out infinite; }
+  .b-stars span:nth-child(1){ left:-34px; top:8px; animation-delay:.2s }
+  .b-stars span:nth-child(2){ right:-40px; top:-4px; animation-delay:.7s }
+  .b-stars span:nth-child(3){ left:16%; bottom:-22px; animation-delay:1.1s }
+  .b-stars span:nth-child(4){ right:12%; bottom:-26px; animation-delay:.45s }
+  @keyframes twinkle { 0%,100%{ opacity:.25; transform:scale(.75) rotate(-12deg);} 50%{ opacity:1; transform:scale(1.15) rotate(10deg);} }
+  .inaug-stage { position:relative; z-index:10; display:flex; flex-direction:column; align-items:center;
+    transform:translateY(30px) scale(.82); opacity:0; }
+  .ceremony.active .inaug-stage { animation:cabinetIn 1s cubic-bezier(.2,.9,.25,1.15) .15s forwards; }
+  @keyframes cabinetIn { to { transform:none; opacity:1; } }
+  .inaug-almirah { position:relative; width:min(76vw,400px); transition:filter 1s ease; }
+  .ceremony.celebrate .inaug-almirah { filter:drop-shadow(0 0 38px rgba(215,165,59,.5)); }
+  .light-rays { position:absolute; left:50%; top:50%; width:300%; aspect-ratio:1; transform:translate(-50%,-50%) scale(.3);
+    border-radius:50%; pointer-events:none; opacity:0; z-index:-1; transition:all 1.3s ease;
+    background:repeating-conic-gradient(rgba(255,213,110,.34) 0 9deg, transparent 9deg 30deg);
+    -webkit-mask:radial-gradient(closest-side, transparent 26%, #000 42%, transparent 76%);
+            mask:radial-gradient(closest-side, transparent 26%, #000 42%, transparent 76%); }
+  .ceremony.celebrate .light-rays { opacity:.75; transform:translate(-50%,-50%) scale(1) rotate(16deg); animation:spinSlow 26s linear infinite; }
+  .garland { position:absolute; top:-26px; left:-16px; right:-16px; text-align:center; z-index:26; font-size:18px; line-height:1;
+    transform-origin:top center; animation:garlandSway 3.2s ease-in-out infinite; filter:drop-shadow(0 3px 5px rgba(120,60,10,.35)); }
+  .garland.g-bot { top:auto; bottom:-21px; animation-delay:.9s; }
+  @keyframes garlandSway { 0%,100%{ transform:rotate(-1.1deg);} 50%{ transform:rotate(1.1deg);} }
+  .rib-wrap { position:absolute; left:-5%; right:-5%; top:44%; height:22px; z-index:28; display:flex;
+    filter:drop-shadow(0 5px 9px rgba(150,20,25,.4)); }
+  .rib-half { position:relative; flex:1; height:100%;
+    background:linear-gradient(180deg,#ff8189 0%,#e63946 46%,#b3232c 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55), inset 0 -2px 4px rgba(0,0,0,.25); }
+  .rib-half.rib-l  { border-radius:6px 0 0 6px;  transform-origin:0% 50%; }
+  .rib-half.rib-r  { border-radius:0 6px 6px 0;  transform-origin:100% 50%; }
+  .rib-bow { position:absolute; left:50%; top:50%; transform:translate(-50%,-52%); font-size:36px; line-height:1; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(120,0,10,.4)); transition:transform .3s ease; }
+  .ceremony.cutting .rib-bow { animation:bowShiver .3s ease-in-out 2; }
+  @keyframes bowShiver { 0%,100%{ transform:translate(-50%,-52%) rotate(0);} 25%{ transform:translate(-50%,-52%) rotate(-7deg);} 75%{ transform:translate(-50%,-52%) rotate(7deg);} }
+  .ceremony.cut .rib-l { animation:ribFallL 1.5s cubic-bezier(.45,.05,.75,.4) forwards; }
+  .ceremony.cut .rib-r { animation:ribFallR 1.5s cubic-bezier(.45,.05,.75,.4) forwards; }
+  .ceremony.cut .rib-bow { animation:bowDrop 1.3s cubic-bezier(.45,.05,.8,.5) .08s forwards; }
+  @keyframes ribFallL { 0%{ transform:translateY(0) rotate(0);} 22%{ transform:translateY(12vh) rotate(-12deg) translateX(-1vw);} 45%{ transform:translateY(23vh) rotate(-38deg) translateX(1.2vw);} 68%{ transform:translateY(34vh) rotate(-20deg) translateX(-.8vw);} 100%{ transform:translateY(58vh) rotate(-50deg); opacity:.7; } }
+  @keyframes ribFallR { 0%{ transform:translateY(0) rotate(0);} 22%{ transform:translateY(12vh) rotate(11deg) translateX(1vw);} 45%{ transform:translateY(23vh) rotate(36deg) translateX(-1.2vw);} 68%{ transform:translateY(34vh) rotate(18deg) translateX(.8vw);} 100%{ transform:translateY(58vh) rotate(48deg); opacity:.7; } }
+  @keyframes bowDrop  { 0%{ transform:translate(-50%,-52%) rotate(0) scale(1);} 30%{ transform:translate(-50%,10vh) rotate(60deg) scale(.95);} 100%{ transform:translate(-56%,46vh) rotate(220deg) scale(.75); opacity:0; } }
+  .scissors { position:absolute; top:calc(44% - 24px); right:-17%; font-size:34px; z-index:29; opacity:0; filter:drop-shadow(0 3px 4px rgba(0,0,0,.25)); }
+  .ceremony.cutting .scissors { animation:scissorRun 1.55s cubic-bezier(.3,.5,.3,1) forwards; }
+  @keyframes scissorRun { 0% { right:-17%; transform:rotate(8deg) scale(1); opacity:1; }
+    55% { right:46%; transform:rotate(-26deg) scale(1.3); opacity:1; }
+    68% { right:46%; transform:rotate(-8deg) scale(1.22); opacity:1; }
+    78% { right:46.8%; transform:rotate(22deg) scale(1.05); opacity:1; }
+    84% { right:46%; transform:rotate(-14deg) scale(1.15); opacity:1; }
+    90% { right:47.5%; transform:rotate(26deg) scale(1); opacity:1; }
+    100% { right:53%; transform:rotate(40deg) scale(.65) translateY(24px); opacity:0; } }
+  .ceremony.cutting .almirah-body { animation:doorRattle .28s ease 3; }
+  @keyframes doorRattle { 0%,100%{ transform:translateX(0);} 25%{ transform:translateX(-1.6px) rotate(-.35deg);} 75%{ transform:translateX(1.6px) rotate(.35deg);} }
+  .ceremony.celebrate .almirah-body .almirah-door { box-shadow:inset 0 0 0 2px rgba(215,165,59,.6), 0 0 44px rgba(215,165,59,.45), 0 10px 25px rgba(0,0,0,.5); transition:box-shadow .8s ease; }
+  .spark { position:absolute; font-size:26px; opacity:0; transform:scale(.4); z-index:27; pointer-events:none; }
+  .ceremony.celebrate .spark { animation:sparkShine 1.8s ease-in-out infinite; }
+  .spark.k1 { top:-4%; left:-9%; animation-delay:.05s; } .spark.k2 { top:30%; right:-13%; animation-delay:.3s; }
+  .spark.k3 { bottom:2%; left:-12%; animation-delay:.55s; } .spark.k4 { top:-9%; right:6%; animation-delay:.8s; }
+  @keyframes sparkPop { 0%{ opacity:0; transform:scale(.4) rotate(-30deg);} 40%{ opacity:1; transform:scale(1.25) rotate(8deg);} 100%{ opacity:0; transform:scale(.9) rotate(30deg) translateY(-14px);} }
+  .guest { position:absolute; right:-15%; bottom:-3%; font-size:44px; z-index:12; transform:scaleX(-1); }
+  .guest .g-hold, .guest .g-cheer { position:absolute; top:-20px; right:-14px; font-size:26px; transform:scaleX(-1); }
+  .guest .g-cheer { opacity:0; }
+  .ceremony.cut .guest { animation:guestJump .5s cubic-bezier(.3,-.2,.4,1.4) 2; }
+  .ceremony.cut .g-hold { opacity:0; transition:opacity .2s; }
+  .ceremony.cut .g-cheer { opacity:1; animation:cheerHands .5s ease-in-out infinite; }
+  @keyframes guestJump { 0%,100%{ transform:scaleX(-1) translateY(0);} 45%{ transform:scaleX(-1) translateY(-14px);} }
+  @keyframes cheerHands { 0%,100%{ transform:scaleX(-1) translateY(0) rotate(0);} 50%{ transform:scaleX(-1) translateY(-5px) rotate(10deg);} }
+  .dhol { position:absolute; bottom:26%; font-size:38px; z-index:8; }
+  .dhol.d1 { left:5%; } .dhol.d2 { right:5%; transform:scaleX(-1); }
+  .ceremony.active .dhol { animation:dholBeat .46s ease-in-out infinite; }
+  .ceremony.cut .dhol { animation-duration:.3s; }
+  @keyframes dholBeat { 0%,100%{ transform:translateY(0) rotate(-6deg);} 50%{ transform:translateY(-9px) rotate(7deg);} }
+  .dhol.d2 { animation-name:dholBeat2; }
+  @keyframes dholBeat2 { 0%,100%{ transform:scaleX(-1) translateY(0) rotate(-6deg);} 50%{ transform:scaleX(-1) translateY(-9px) rotate(7deg);} }
+  .petal-box { position:absolute; inset:0; pointer-events:none; z-index:12; overflow:hidden; }
+  .petal { position:absolute; top:-6%; left:50%; will-change:transform; animation-name:petalFall; animation-timing-function:linear; animation-iteration-count:infinite; }
+  @keyframes petalFall { 0% { transform:translate3d(0,-8vh,0) rotate(0deg); opacity:0; }
+    7% { opacity:.95; } 100% { transform:translate3d(var(--dx,50px),108vh,0) rotate(560deg); opacity:.85; } }
+  .audience { position:absolute; left:0; right:0; bottom:0; z-index:11; display:flex; flex-direction:column; align-items:center; }
+  .aud-row { display:flex; align-items:flex-end; justify-content:center; gap:clamp(2px,1.2vw,14px); padding:0 8px; width:100%;
+    flex-wrap:nowrap; overflow:hidden; }
+  .aud-row.back { font-size:22px; opacity:.62; transform:scale(.9); margin-bottom:-8px; }
+  .aud-row.front { font-size:clamp(26px,3.6vw,38px); }
+  .spec { position:relative; display:inline-block; transform:translateY(160%); opacity:0; }
+  .ceremony.active .spec { animation:specIn .65s cubic-bezier(.2,.9,.3,1.25) forwards; animation-delay:calc(var(--i) * .05s); }
+  @keyframes specIn { to { transform:translateY(0); opacity:1; } }
+  .aud-row.back .spec { animation-delay:calc(var(--i) * .04s + .12s) !important; }
+  .hands { position:absolute; left:50%; top:44%; font-size:.78em; transform:translate(-50%,0); animation:clapA .5s ease-in-out infinite; animation-delay:calc(var(--i) * .09s); }
+  .aud-row.back .hands { animation-name:clapB; animation-duration:.62s; }
+  @keyframes clapA { 0%,100%{ transform:translate(-50%,0) rotate(-10deg) scale(1);} 50%{ transform:translate(-50%,-4px) rotate(10deg) scale(1.14);} }
+  @keyframes clapB { 0%,100%{ transform:translate(-50%,0) rotate(8deg) scale(.95);} 50%{ transform:translate(-50%,-3px) rotate(-8deg) scale(1.06);} }
+  .ceremony.celebrate .hands { animation-duration:.27s; }
+  .ceremony.celebrate .spec.cheer { animation:audJump .55s ease-in-out infinite; }
+  @keyframes audJump { 0%,100%{ transform:translateY(0);} 45%{ transform:translateY(-12px);} 60%{ transform:translateY(-12px);} }
+  .bubbles { position:absolute; inset:0; pointer-events:none; z-index:22; }
+  .bubbles span { position:absolute; font-size:clamp(.8rem,1.9vw,1.05rem); font-weight:800; color:#173f57;
+    background:#fff; border:1px solid rgba(62,146,174,.28); border-radius:999px; padding:.42rem .8rem;
+    box-shadow:0 10px 24px rgba(47,112,139,.16); opacity:0; }
+  .ceremony.celebrate .bubbles span { animation:bubbleUp 2.4s cubic-bezier(.2,.8,.3,1) forwards; }
+  @keyframes bubbleUp { 0%{ opacity:0; transform:translateY(16px) scale(.6);} 18%{ opacity:1; transform:translateY(0) scale(1.08);} 30%{ transform:translateY(0) scale(1);} 78%{ opacity:1; } 100%{ opacity:0; transform:translateY(-72px) scale(1);} }
+  .c-btn { position:absolute; z-index:40; font-weight:700; border-radius:999px; padding:.5rem 1rem; font-size:.82rem;
+    background:rgba(255,255,255,.92); border:1px solid rgba(62,146,174,.3); color:#2b6078;
+    box-shadow:0 8px 20px rgba(47,112,139,.14); cursor:pointer; transition:all .25s ease; font-family:'Outfit',sans-serif; }
+  .c-btn:hover { transform:translateY(-2px) scale(1.04); background:#fff; }
+  #soundBtn { top:14px; right:150px; }
+  #inaugSkip { top:14px; right:14px; }
+  @media (max-width:640px){ .guest{ display:none; } .dhol{ font-size:28px; } .aud-row.back{ display:none; }
+    .aud-row.front{ font-size:clamp(16px,4.2vw,26px); gap:2px; }
+    #soundBtn { right:128px; } }
+  @media (prefers-reduced-motion: reduce){ .petal,.spot,.garland,.dhol,.hands,.b-stars span{ animation:none !important; } }
+  /* ============================================================ */
+
+  /* ============================================================
+     CEREMONY v2 - longer realistic celebration + landing teaser
+     ============================================================ */
+  .ceremony { opacity:0; transition:opacity .5s ease; }
+  .ceremony.celebrate .spot { opacity:.62; }
+  .spot { transition:opacity .8s ease; }
+  .ceremony.celebrate .stage-floor { opacity:.9; transform:translateX(-50%) scaleX(1.06); transition:all .8s ease; }
+  .ceremony:not(.guest-in) .guest { transform:translateX(150%) scaleX(-1); opacity:0; }
+  .ceremony.guest-in .guest { animation:guestEnter .95s cubic-bezier(.25,.9,.3,1.1) forwards; }
+  @keyframes guestEnter { 0%{ transform:translateX(150%) scaleX(-1); opacity:0;} 60%{ opacity:1;} 100%{ transform:translateX(0) scaleX(-1); opacity:1;} }
+  @keyframes sparkShine { 0%,100%{ opacity:.15; transform:scale(.7) rotate(-10deg);} 50%{ opacity:1; transform:scale(1.3) rotate(12deg);} }
+  .ceremony.celebrate .b-tag { animation:tagPulse 1.15s ease-in-out infinite; }
+  @keyframes tagPulse { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.05) rotate(-.6deg);} }
+  .ceremony.celebrate .almirah-body .almirah-door { animation:doorGlowPulse 1.7s ease-in-out infinite; }
+  @keyframes doorGlowPulse { 0%,100%{ box-shadow:inset 0 0 0 2px rgba(215,165,59,.5), 0 0 30px rgba(215,165,59,.35), 0 10px 25px rgba(0,0,0,.5);} 50%{ box-shadow:inset 0 0 0 2px rgba(255,220,130,.85), 0 0 52px rgba(215,165,59,.6), 0 10px 25px rgba(0,0,0,.5);} }
+  /* photographers' flashes popping in the crowd */
+  .ceremony .flash { position:absolute; width:74px; height:74px; margin:-37px; border-radius:50%; pointer-events:none; z-index:33;
+    background:radial-gradient(closest-side, rgba(255,255,255,.95), rgba(255,255,255,0)); mix-blend-mode:screen;
+    animation:flashPop .34s ease-out forwards; }
+  @keyframes flashPop { 0%{ transform:scale(.2); opacity:0;} 30%{ transform:scale(1.15); opacity:1;} 100%{ transform:scale(.4); opacity:0;} }
+  /* balloon release */
+  .ceremony .balloon { position:absolute; bottom:-8%; z-index:9; pointer-events:none; animation:balloonRise 4.6s ease-in forwards;
+    font-size:26px; line-height:1; }
+  @keyframes balloonRise { 0%{ transform:translateY(0) translateX(0) rotate(-4deg); opacity:0;} 8%{ opacity:1;}
+    25%{ transform:translateY(-26vh) translateX(calc(var(--bdx,0px) * -1)) rotate(5deg);}
+    55%{ transform:translateY(-58vh) translateX(var(--bdx,0px)) rotate(-5deg);}
+    100%{ transform:translateY(-118vh) translateX(0) rotate(4deg); opacity:.95;} }
+  /* crowd placards & phone cameras */
+  .hands.sign { background:#fff; border:1.5px solid #d7a53b; color:#2b82ad; font-size:9px; font-weight:900; letter-spacing:.06em;
+    padding:1.5px 5px; border-radius:3px; top:-6px; transform:translate(-50%,0) rotate(-5deg);
+    box-shadow:0 3px 8px rgba(47,112,139,.2); animation:signWave 2.1s ease-in-out infinite; }
+  .hands.sign::after { content:''; position:absolute; left:50%; top:100%; width:1.5px; height:10px; background:#b98257; transform:translateX(-50%); }
+  @keyframes signWave { 0%,100%{ transform:translate(-50%,0) rotate(-6deg);} 50%{ transform:translate(-50%,-3px) rotate(7deg);} }
+  .hands.cam { animation:camSnap 1.2s ease-in-out infinite; }
+  @keyframes camSnap { 0%,100%{ transform:translate(-50%,0) scale(1);} 12%{ transform:translate(-50%,-2px) scale(1.18);} 24%{ transform:translate(-50%,0) scale(1);} }
+  /* ---- landing-page live teaser (mini ceremony) ---- */
+  #miniInaug { position:fixed; top:88px; right:20px; width:196px; z-index:44; cursor:grab;
+    touch-action:none; user-select:none; -webkit-user-select:none;
+    background:rgba(255,255,255,.88); border:1px solid rgba(62,146,174,.28); border-radius:20px;
+    box-shadow:0 18px 44px rgba(47,112,139,.18); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    overflow:hidden; transition:transform .35s cubic-bezier(.22,.8,.26,.99), box-shadow .35s ease; }
+  #miniInaug:hover { transform:translateY(-3px) scale(1.02); box-shadow:0 26px 54px rgba(47,112,139,.26); }
+  #miniInaug.dragging { transition:none; transform:none; cursor:grabbing; box-shadow:0 34px 64px rgba(47,112,139,.34); border-color:rgba(62,146,174,.55); }
+  #miniHead { cursor:grab; }
+  #miniStage { cursor:pointer; }
+  #miniInaug.mini-mini #miniStage, #miniInaug.mini-mini #miniFoot { display:none; }
+  #miniInaug.mini-mini { width:auto; }
+  #miniInaug.mini-mini #miniHead { padding:7px 12px; border-bottom:none; }
+  #miniHead { display:flex; align-items:center; gap:6px; padding:7px 10px; font-size:10.5px; font-weight:800; letter-spacing:.05em;
+    color:#173f57; border-bottom:1px dashed rgba(62,146,174,.3); background:linear-gradient(90deg, rgba(104,191,212,.18), rgba(215,165,59,.18)); }
+  #miniHead .dot { width:7px; height:7px; border-radius:50%; background:#ef4444; animation:miniDot 1.1s ease-in-out infinite; box-shadow:0 0 8px rgba(239,68,68,.8); }
+  @keyframes miniDot { 0%,100%{ transform:scale(1); opacity:1;} 50%{ transform:scale(1.45); opacity:.55;} }
+  #miniClose { margin-left:auto; border:none; background:transparent; cursor:pointer; font-size:13px; color:#5d7888; padding:2px 5px; border-radius:8px; line-height:1; }
+  #miniClose:hover { background:rgba(43,130,173,.12); color:#173f57; }
+  #miniStage { position:relative; height:224px; overflow:hidden; }
+  #miniFoot { padding:6px 10px 8px; font-size:9.5px; font-weight:800; text-align:center; color:#406b7f;
+    background:linear-gradient(90deg, rgba(43,130,173,.08), rgba(215,165,59,.12)); }
+  .ceremony.mini { position:static; display:block; height:100%; opacity:1;
+    background:radial-gradient(120% 90% at 50% 0%, #fffaf0, #eef8fb 70%); }
+  .ceremony.mini.active { display:block; }
+  .ceremony.mini .spot { width:120px; height:260px; top:-10px; opacity:.18; }
+  .ceremony.mini .stage-floor { bottom:34px; height:40px; width:190px; filter:blur(4px); }
+  .ceremony.mini .banner, .ceremony.mini .b-stars, .ceremony.mini .c-btn { display:none; }
+  .ceremony.mini .inaug-stage { padding-top:12px; }
+  .ceremony.mini .inaug-almirah { width:118px; }
+  .ceremony.mini .almirah-cabinet { border-width:3px; padding:3px !important; }
+  .ceremony.mini .almirah-body { height:86px !important; border-radius:4px !important; }
+  .ceremony.mini .almirah-door { border-width:2px; }
+  .ceremony.mini .door-panel-inner { inset:6px; border-width:1.5px; }
+  .ceremony.mini .door-brand-badge { display:none; }
+  .ceremony.mini .door-handle-3d { width:3px; height:24px; }
+  .ceremony.mini .left-door .door-handle-3d { right:4px; }
+  .ceremony.mini .right-door .door-handle-3d { left:4px; }
+  .ceremony.mini .almirah-crown span { font-size:6px !important; letter-spacing:.08em !important; }
+  .ceremony.mini .almirah-crown { padding-top:.2rem !important; padding-bottom:.2rem !important; }
+  .ceremony.mini .garland { font-size:8px; top:-13px; left:-6px; right:-6px; }
+  .ceremony.mini .garland.g-bot { bottom:-10px; }
+  .ceremony.mini .rib-wrap { height:8px; top:44%; left:-4%; right:-4%; }
+  .ceremony.mini .rib-bow { font-size:14px; }
+  .ceremony.mini .scissors { font-size:15px; top:calc(44% - 12px); }
+  .ceremony.mini .guest { font-size:17px; right:-10%; bottom:6px; }
+  .ceremony.mini .guest .g-hold, .ceremony.mini .guest .g-cheer { font-size:10px; top:-9px; right:-6px; }
+  .ceremony.mini .dhol { font-size:15px; bottom:56px; }
+  .ceremony.mini .spark { font-size:12px; }
+  .ceremony.mini .petal { font-size:9px !important; }
+  .ceremony.mini .audience { bottom:6px; }
+  .ceremony.mini .aud-row.back { display:none; }
+  .ceremony.mini .aud-row.front { font-size:15px; gap:3px; }
+  .ceremony.mini .hands.sign { font-size:4.5px; padding:.5px 2px; border-radius:2px; border-width:1px; top:-2px; }
+  .ceremony.mini .bubbles span { font-size:7.5px; padding:2px 5px; }
+  .ceremony.mini .balloon { font-size:13px; }
+  .ceremony.mini .flash { width:30px; height:30px; margin:-15px; }
+  @media (max-width:640px) { #miniInaug { top:auto; bottom:16px; left:10px; right:auto; width:150px; }
+    #miniStage { height:176px; } #miniFoot { font-size:8px; }
+    .ceremony.mini .inaug-almirah { width:96px; }
+    .ceremony.mini .almirah-body { height:70px !important; }
+    .ceremony.mini .aud-row.front { font-size:13px; gap:2px; } }
+  @media (prefers-reduced-motion: reduce) { #miniHead .dot { animation:none !important; } }
+  /* ============================================================ */
+
+  /* ID-strength frame rules for the full-screen overlay (class rules can't beat the base #id rule) */
+  #inaugOverlay.active { display:flex; align-items:center; justify-content:center; }
+  #inaugOverlay.active.in { opacity:1; }
+  #inaugOverlay.active.out { opacity:0; }
 </style>
 </head>
 <body class="animated-bg">
 
+<div id="scrollProgress"></div>
+<div id="cursorGlow"></div>
+<button id="toTopBtn" aria-label="Back to top" title="Back to top">
+  <iconify-icon icon="mdi:rocket-launch" class="text-xl" style="color:#2b82ad;"></iconify-icon>
+</button>
+
 <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none" style="z-index:1;"></canvas>
 
-<div class="fixed inset-0 pointer-events-none overflow-hidden" style="z-index:0;">
+<div class="fixed inset-0 pointer-events-none overflow-hidden" id="orbLayer" style="z-index:0;">
   <div class="orb" style="width:400px;height:400px;background:#2b82ad;top:-100px;left:-100px;animation:orbMove1 12s ease-in-out infinite;"></div>
   <div class="orb" style="width:350px;height:350px;background:#68bfd4;top:30%;right:-80px;animation:orbMove2 14s ease-in-out infinite;"></div>
   <div class="orb" style="width:300px;height:300px;background:#4aa9c3;bottom:10%;left:20%;animation:orbMove3 10s ease-in-out infinite;"></div>
@@ -634,7 +1041,7 @@
       <a href="#qr" class="hover:text-slate-800 transition">Play & Win</a>
       <a href="#collection" class="hover:text-slate-800 transition">Collection</a>
     </div>
-    <button onclick="handlePlayClick()" class="btn-shine px-5 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105 shadow-lg" style="background:linear-gradient(135deg,#d7a53b,#68bfd4);color:#f7fbfc;">
+    <button onclick="handlePlayClick()" class="btn-shine mag px-5 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105 shadow-lg" style="background:linear-gradient(135deg,#d7a53b,#68bfd4);color:#f7fbfc;">
       Scan & Play
     </button>
   </div>
@@ -648,35 +1055,35 @@
       <span class="text-xs font-medium tracking-wide">Premium home appliances and iron almirahs, made for modern living</span>
     </div>
     <h1 class="font-display font-black leading-[0.9] mb-6" style="font-size:clamp(2.5rem,8vw,6rem);">
-      <span class="block shimmer-text">Scan. Arrange.</span>
-      <span class="block text-slate-800">Win Exclusive</span>
-      <span class="block" style="background:linear-gradient(135deg,#d7a53b,#efaa73);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Discounts!</span>
+      <span class="line-mask"><span class="line-inner shimmer-text">Scan. Arrange.</span></span>
+      <span class="line-mask"><span class="line-inner d1 text-slate-800">Win Exclusive</span></span>
+      <span class="line-mask"><span class="line-inner d2" style="background:linear-gradient(135deg,#d7a53b,#efaa73);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Discounts!</span></span>
     </h1>
-    <p class="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+    <p class="rise-soft s1 text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
       Scan our QR code, play the world's most satisfying almirah-arranging game, and unlock a secret promo code for your next home-appliance order.
     </p>
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-      <button onclick="scrollToQR()" class="btn-shine group px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all hover:scale-105 pulse-glow" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);color:white;">
+    <div class="rise-soft s2 flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+      <button onclick="scrollToQR()" class="btn-shine mag group px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 transition-all hover:scale-105 pulse-glow" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);color:white;">
         <iconify-icon icon="mdi:qrcode-scan" class="text-2xl"></iconify-icon>
         Scan to Play
         <iconify-icon icon="mdi:arrow-right" class="text-xl group-hover:translate-x-1 transition"></iconify-icon>
       </button>
-      <button onclick="handlePlayClick()" class="px-8 py-4 rounded-full font-bold text-lg glass transition-all hover:scale-105 flex items-center gap-3">
+      <button onclick="handlePlayClick()" class="mag px-8 py-4 rounded-full font-bold text-lg glass transition-all hover:scale-105 flex items-center gap-3">
         <iconify-icon icon="mdi:gamepad-variant" class="text-2xl"></iconify-icon>
         Play Now
       </button>
     </div>
-    <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
+    <div class="rise-soft s3 grid grid-cols-3 gap-4 max-w-2xl mx-auto">
       <div class="glass rounded-2xl p-4 sm:p-6">
-        <div class="font-display font-black text-2xl sm:text-4xl" style="color:#d7a53b;" id="statPlays">50K+</div>
+        <div class="font-display font-black text-2xl sm:text-4xl" style="color:#d7a53b;" id="statPlays" data-count-to="50" data-count-suffix="K+">50K+</div>
         <div class="text-xs sm:text-sm text-slate-500 mt-1">Players Won</div>
       </div>
       <div class="glass rounded-2xl p-4 sm:p-6">
-        <div class="font-display font-black text-2xl sm:text-4xl" style="color:#68bfd4;">₹700</div>
+        <div class="font-display font-black text-2xl sm:text-4xl" style="color:#68bfd4;" data-count-to="700" data-count-prefix="₹">₹700</div>
         <div class="text-xs sm:text-sm text-slate-500 mt-1">Max Discount</div>
       </div>
       <div class="glass rounded-2xl p-4 sm:p-6">
-        <div class="font-display font-black text-2xl sm:text-4xl" style="color:#4aa9c3;">4.9★</div>
+        <div class="font-display font-black text-2xl sm:text-4xl" style="color:#4aa9c3;" data-count-to="4.9" data-count-decimals="1" data-count-suffix="★">4.9★</div>
         <div class="text-xs sm:text-sm text-slate-500 mt-1">Player Rating</div>
       </div>
     </div>
@@ -687,7 +1094,7 @@
 </section>
 
 <!-- ===================== MARQUEE ===================== -->
-<div class="relative py-4 overflow-hidden" style="z-index:2;background:linear-gradient(90deg,#2b82ad,#68bfd4,#efaa73);">
+<div class="marquee-wrap relative py-4 overflow-hidden" style="z-index:2;background:linear-gradient(90deg,#2b82ad,#68bfd4,#efaa73);">
   <div class="marquee-track flex whitespace-nowrap">
     <div class="flex items-center gap-8 px-4 font-display font-bold text-lg">
       <span>🔥 SCAN & WIN</span><span>•</span>
@@ -720,21 +1127,21 @@
     </div>
 
     <div class="grid md:grid-cols-3 gap-6">
-      <div class="glass rounded-3xl p-8 reveal hover:scale-105 transition-all duration-300 group">
+      <div class="glass tilt-card beam-edge rounded-3xl p-8 reveal hover:scale-105 transition-all duration-300 group">
         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-6 transition" style="background:linear-gradient(135deg,#2b82ad,#4aa9c3);">
           <iconify-icon icon="mdi:tshirt-crew" class="text-3xl text-slate-800"></iconify-icon>
         </div>
         <h3 class="font-display font-bold text-2xl mb-3">Premium Collection</h3>
         <p class="text-slate-500 leading-relaxed">From everyday desert coolers to heavy metal storage almirahs, curate your home with top-quality comfort and security at unbeatable prices.</p>
       </div>
-      <div class="glass rounded-3xl p-8 reveal hover:scale-105 transition-all duration-300 group" style="transition-delay:0.15s;">
+      <div class="glass tilt-card beam-edge rounded-3xl p-8 reveal hover:scale-105 transition-all duration-300 group" style="transition-delay:0.15s;">
         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-6 transition" style="background:linear-gradient(135deg,#68bfd4,#efaa73);">
           <iconify-icon icon="mdi:gamepad-round" class="text-3xl text-slate-800"></iconify-icon>
         </div>
         <h3 class="font-display font-bold text-2xl mb-3">Play & Save</h3>
         <p class="text-slate-500 leading-relaxed">Arrange clothes in our realistic 8-shelf almirah, beat the clock, and unlock secret promo codes worth up to ₹700 off your next purchase.</p>
       </div>
-      <div class="glass rounded-3xl p-8 reveal hover:scale-105 transition-all duration-300 group" style="transition-delay:0.3s;">
+      <div class="glass tilt-card beam-edge rounded-3xl p-8 reveal hover:scale-105 transition-all duration-300 group" style="transition-delay:0.3s;">
         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-6 transition" style="background:linear-gradient(135deg,#4ba988,#d7a53b);">
           <iconify-icon icon="mdi:truck-fast" class="text-3xl text-slate-800"></iconify-icon>
         </div>
@@ -760,12 +1167,17 @@
         Scan the QR code with your phone camera to start the almirah challenge. Win exciting discounts!
       </p>
       <div class="flex flex-col items-center gap-8">
-        <div class="qr-container p-4 bg-white rounded-3xl">
-          <div id="qrcode" class="w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center"></div>
+        <div class="qr-wrap">
+          <span class="qr-ring"></span>
+          <span class="qr-ring d2"></span>
+          <span class="qr-ring d3"></span>
+          <div class="qr-container p-4 bg-white rounded-3xl">
+            <div id="qrcode" class="w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center"></div>
+          </div>
         </div>
         <div class="pt-4">
           <p class="text-slate-400 text-sm mb-4">— Or play right here —</p>
-          <button onclick="handlePlayClick()" class="btn-shine px-10 py-4 rounded-full font-bold text-xl flex items-center gap-3 mx-auto transition-all hover:scale-105 shadow-xl" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);">
+          <button onclick="handlePlayClick()" class="btn-shine mag px-10 py-4 rounded-full font-bold text-xl flex items-center gap-3 mx-auto transition-all hover:scale-105 shadow-xl" style="background:linear-gradient(135deg,#2b82ad,#68bfd4);">
             <iconify-icon icon="mdi:play-circle" class="text-2xl"></iconify-icon>
             Play Now
           </button>
@@ -777,6 +1189,7 @@
 
 <!-- ===================== COLLECTION ===================== -->
 <section id="collection" class="relative py-24 px-4" style="z-index:2;">
+  <div class="section-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-12 reveal">
       <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-4 text-sm text-slate-600">
@@ -792,28 +1205,28 @@
     </div>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      <a href="https://modishenterprises.com/product-category/air-coolers-online/" target="_blank" rel="noopener" class="product-card reveal group">
-        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2026/01/front-straight-pose-1-768x839.png" alt="Modish air cooler" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+      <a href="https://modishenterprises.com/product-category/air-coolers-online/" target="_blank" rel="noopener" class="product-card reveal group tilt-card beam-edge">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2025/12/front-pose-2-937x1024.png" alt="Modish air cooler" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
         <div class="product-card-body"><div class="product-kicker">01 · Cooling</div><h3>Air Coolers</h3><p>Efficient cooling for comfortable homes and workspaces.</p><span class="product-link">Explore collection <span>↗</span></span></div>
       </a>
-      <a href="https://modishenterprises.com/product-category/buy-iron-almirah-online/" target="_blank" rel="noopener" class="product-card reveal group" style="transition-delay:0.08s;">
-        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2026/01/Royal-Embosis.jpg" alt="Royal Embosis iron almirah" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+      <a href="https://modishenterprises.com/product-category/buy-iron-almirah-online/" target="_blank" rel="noopener" class="product-card reveal group tilt-card beam-edge" style="transition-delay:0.08s;">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2026/01/red-wali-936x1024.png" alt="Royal Embosis iron almirah" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
         <div class="product-card-body"><div class="product-kicker">02 · Storage</div><h3>Almirahs</h3><p>Strong, secure and stylish iron storage for every room.</p><span class="product-link">Explore collection <span>↗</span></span></div>
       </a>
-      <a href="https://modishenterprises.com/product-category/washing-machine/" target="_blank" rel="noopener" class="product-card reveal group" style="transition-delay:0.16s;">
-        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2026/01/MDWM14.jpg" alt="Modish washing machine" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+      <a href="https://modishenterprises.com/product-category/washing-machine/" target="_blank" rel="noopener" class="product-card reveal group tilt-card beam-edge" style="transition-delay:0.16s;">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2026/01/MDWM07-Full-glass.jpg" alt="Modish washing machine" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
         <div class="product-card-body"><div class="product-kicker">03 · Laundry</div><h3>Washing Machines</h3><p>Practical wash programs with easy movement and everyday reliability.</p><span class="product-link">Explore collection <span>↗</span></span></div>
       </a>
-      <a href="https://modishenterprises.com/product-category/buy-the-best-led-tv-online/" target="_blank" rel="noopener" class="product-card reveal group" style="transition-delay:0.24s;">
+      <a href="https://modishenterprises.com/product-category/buy-the-best-led-tv-online/" target="_blank" rel="noopener" class="product-card reveal group tilt-card beam-edge" style="transition-delay:0.24s;">
         <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2025/12/Untitled-design-13.jpg" alt="Modish smart LED TV" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
         <div class="product-card-body"><div class="product-kicker">04 · Entertainment</div><h3>LED TVs</h3><p>Brilliant picture, smart features and immersive home entertainment.</p><span class="product-link">Explore collection <span>↗</span></span></div>
       </a>
-      <a href="https://modishenterprises.com/product-category/buy-mixers-and-juicers-online/" target="_blank" rel="noopener" class="product-card reveal group" style="transition-delay:0.32s;">
-        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2025/12/Untitled-design-3-1.jpg" alt="Modish mixer and juicer" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+      <a href="https://modishenterprises.com/product-category/buy-mixers-and-juicers-online/" target="_blank" rel="noopener" class="product-card reveal group tilt-card beam-edge" style="transition-delay:0.32s;">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/al_opt_content/IMAGE/modishenterprises.com/wp-content/uploads/2025/12/Untitled-design-3.jpg.bv.webp?bv_host=modishenterprises.com" alt="Modish mixer and juicer" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
         <div class="product-card-body"><div class="product-kicker">05 · Kitchen</div><h3>Mixers &amp; Juicers</h3><p>Powerful kitchen companions for faster, fresher preparation.</p><span class="product-link">Explore collection <span>↗</span></span></div>
       </a>
-      <a href="https://modishenterprises.com/product-category/sewing-machines-online/" target="_blank" rel="noopener" class="product-card reveal group" style="transition-delay:0.4s;">
-        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2024/01/1.jpg" alt="Modish sewing machine" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
+      <a href="https://modishenterprises.com/product-category/sewing-machines-online/" target="_blank" rel="noopener" class="product-card reveal group tilt-card beam-edge" style="transition-delay:0.4s;">
+        <div class="product-image-wrap"><img src="https://modishenterprises.com/wp-content/uploads/2024/01/2-2.jpg" alt="Modish sewing machine" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('image-fallback');"></div>
         <div class="product-card-body"><div class="product-kicker">06 · Craft</div><h3>Sewing Machines</h3><p>Dependable machines for creative projects at every skill level.</p><span class="product-link">Explore collection <span>↗</span></span></div>
       </a>
     </div>
@@ -831,19 +1244,13 @@
           </div>
           <div class="font-display font-extrabold text-lg">Modish Enterprises</div>
         </div>
-        <p class="text-sm text-slate-500 leading-relaxed">Our Story
-With a proud legacy spanning 25 years, we are dedicated to manufacturing and selling premium-quality products while delivering unparalleled service excellence. Our commitment to quality assurance ensures that customers can trust in the reliability and performance of every item we offer.
-
-Our extensive range includes top-of-the-line grills, iron coolers, fiber coolers, plastic coolers, and exhaust fans, all crafted to the highest standards of excellence. Serving as a comprehensive solution for all your needs, we guarantee exceptional quality across our product line..
-  <div class="space-y-2 text-sm text-slate-500">
-          <div>Air Coolers</div>
-          <div>Washing Machine</div>
-          <div>Almirahs</div>
-          <div>Mixers & Juicers</div>
-          <div>LED TVs</div>
-          <div>Sewing Machines</div>
-        </div>
-</p>
+        <h4 class="font-bold mb-2 text-sm uppercase tracking-wide text-slate-400">Our Story</h4>
+        <p class="text-sm text-slate-500 leading-relaxed">
+          With a proud legacy spanning 25 years, we are dedicated to manufacturing and selling premium-quality products while delivering unparalleled service excellence. Our commitment to quality assurance ensures that customers can trust the reliability and performance of every item we offer.
+        </p>
+        <p class="text-sm text-slate-500 leading-relaxed mt-3">
+          Our extensive range includes top-of-the-line grills, iron coolers, fiber coolers, plastic coolers, and exhaust fans, all crafted to the highest standards of excellence — a comprehensive solution for all your needs.
+        </p>
       </div>
       <div>
         <h4 class="font-bold mb-4 text-sm uppercase tracking-wide text-slate-400">Shop</h4>
@@ -860,9 +1267,9 @@ Our extensive range includes top-of-the-line grills, iron coolers, fiber coolers
         <h4 class="font-bold mb-4 text-sm uppercase tracking-wide text-slate-400">Company</h4>
         <div class="space-y-2 text-sm text-slate-500">
           <div>Bharat Krishi Farm, Khasra no - 103, near Bank of Baroda , Seva Dham Road, Mandoli - 110093</div>
-          <div>🖂 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="74191b101d071c111a00110604061d07110707341319151d185a171b19">[email&#160;protected]</a></div>
-          <div>📞+91 9643996464</div>
-          <div>📞+91 9643996565</div>
+          <div>🖂 <a href="/cdn-cgi/l/email-protection#5835373c312b303d362c3d2a282a312b3d2b2b183f35393134763b3735" class="mail-link"><span class="__cf_email__" data-cfemail="3d505259544e55585349584f4d4f544e584e4e7d5a505c5451135e5250">[email&#160;protected]</span></a></div>
+          <div>📞 <a href="tel:+919643996464" class="hover:text-sky-700 transition" style="color:#2b6078;">+91 9643996464</a></div>
+          <div>📞 <a href="tel:+919643996565" class="hover:text-sky-700 transition" style="color:#2b6078;">+91 9643996565</a></div>
         </div>
       </div>
       <div id="social">
@@ -1211,6 +1618,88 @@ Our extensive range includes top-of-the-line grills, iron coolers, fiber coolers
   </div>
 </div>
 
+
+<!-- ===================== INAUGURATION CEREMONY OVERLAY (plays before the first game of a session) ===================== -->
+<div id="inaugOverlay" class="ceremony" aria-hidden="true">
+  <div class="spot s1"></div>
+  <div class="spot s2"></div>
+  <div class="stage-floor"></div>
+  <div class="petal-box"></div>
+  <div class="bubbles"></div>
+  <div class="banner">
+    <span class="b-tag">🎉 GRAND INAUGURATION 🎉</span>
+    <span class="b-sub">Modish Home Appliances &bull; शुभ आरंभ &mdash; the almirah is here!</span>
+    <div class="b-stars"><span>✨</span><span>✨</span><span>✨</span><span>✨</span></div>
+  </div>
+  <button id="soundBtn" class="c-btn" title="Ceremony sound on/off" aria-label="Toggle ceremony sound">🔊</button>
+  <button id="inaugSkip" class="c-btn" title="Skip to the game" aria-label="Skip ceremony">Skip to game ➜</button>
+  <div class="dhol d1" aria-hidden="true">🥁</div>
+  <div class="dhol d2" aria-hidden="true">🥁</div>
+  <div class="inaug-stage">
+    <div class="inaug-almirah">
+      <div class="light-rays"></div>
+      <div class="almirah-cabinet p-2">
+        <div class="almirah-door left-door">
+          <div class="door-panel-inner"></div>
+          <div class="door-brand-badge door-brand-top" role="img" aria-label="Modish Home Appliances"></div>
+          <div class="door-handle-3d"></div>
+        </div>
+        <div class="almirah-door right-door">
+          <div class="door-panel-inner"></div>
+          <div class="door-brand-badge door-brand-bottom" role="img" aria-label="Modish Home Appliances"></div>
+          <div class="door-handle-3d"></div>
+        </div>
+        <div class="almirah-crown text-center py-1.5 rounded-t-md">
+          <span class="font-display font-bold text-slate-700 text-[10px] sm:text-xs tracking-[0.18em]">✦ MODISH HOME APPLIANCES ✦</span>
+        </div>
+        <div class="almirah-body" style="height:clamp(230px,40vh,320px);border-radius:8px;background:linear-gradient(180deg,rgba(91,48,29,.9),rgba(53,28,18,.95));"></div>
+      </div>
+      <div class="garland" aria-hidden="true">🌼🌼🌺🌺🌼🌺🌼🌼🌺🌺🌼🌺</div>
+      <div class="garland g-bot" aria-hidden="true">🌼🌼🌺🌺🌼🌺🌼🌼🌺🌺🌼🌺</div>
+      <span class="spark k1">✨</span><span class="spark k2">✨</span><span class="spark k3">✨</span><span class="spark k4">✨</span>
+      <div class="rib-wrap">
+        <div class="rib-half rib-l"></div>
+        <div class="rib-half rib-r"></div>
+        <span class="rib-bow">🎀</span>
+      </div>
+      <span class="scissors" aria-hidden="true">✂️</span>
+      <div class="guest" aria-hidden="true">👨<span class="g-hold">✂️</span><span class="g-cheer">🙌</span></div>
+    </div>
+  </div>
+  <div class="audience">
+        <div class="aud-row back">
+          <span class="spec" style="--i:0">👦<span class="hands">👏</span></span>
+          <span class="spec" style="--i:1">👧<span class="hands">👏</span></span>
+          <span class="spec" style="--i:2">🧒<span class="hands">👏</span></span>
+          <span class="spec" style="--i:3">👴<span class="hands">👏</span></span>
+          <span class="spec" style="--i:4">👨<span class="hands">👏</span></span>
+          <span class="spec" style="--i:5">👩<span class="hands">👏</span></span>
+          <span class="spec" style="--i:6">🧔<span class="hands">👏</span></span>
+          <span class="spec" style="--i:7">🧓<span class="hands">👏</span></span>
+          <span class="spec" style="--i:8">👲<span class="hands">👏</span></span>
+          <span class="spec" style="--i:9">👳<span class="hands">👏</span></span>
+          <span class="spec" style="--i:10">👵<span class="hands">👏</span></span>
+          <span class="spec" style="--i:11">🧕<span class="hands">👏</span></span>
+        </div>
+        <div class="aud-row front">
+          <span class="spec" style="--i:0">🧔<span class="hands">👏</span></span>
+          <span class="spec" style="--i:1">👩<span class="hands">👏</span></span>
+          <span class="spec" style="--i:2">👨<span class="hands">👏</span></span>
+          <span class="spec" style="--i:3">👵<span class="hands">👏</span></span>
+          <span class="spec cheer" style="--i:4">🧒<span class="hands">🙌</span></span>
+          <span class="spec" style="--i:5">👳<span class="hands">👏</span></span>
+          <span class="spec" style="--i:6">👲<span class="hands">👏</span></span>
+          <span class="spec" style="--i:7">🧕<span class="hands">👏</span></span>
+          <span class="spec" style="--i:8">🧓<span class="hands">👏</span></span>
+          <span class="spec cheer" style="--i:9">👦<span class="hands">🙌</span></span>
+          <span class="spec cheer" style="--i:10">👧<span class="hands">🙌</span></span>
+          <span class="spec" style="--i:11">👴<span class="hands">👏</span></span>
+          <span class="spec" style="--i:12">👨<span class="hands">👏</span></span>
+          <span class="spec" style="--i:13">🧔<span class="hands">👏</span></span>
+        </div>
+  </div>
+</div>
+
 <!-- ===================== JAVASCRIPT ===================== -->
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ===== PARTICLE CANVAS =====
@@ -1527,8 +2016,9 @@ function startGame() {
   document.getElementById('loseScreen').classList.add('hidden');
   document.getElementById('loseScreen').classList.remove('flex');
 
-  // Start 5-second closed almirah preview before opening doors
-  startAlmirahOpeningSequence();
+  // Inauguration ceremony first, THEN the 5-second closed almirah preview before opening doors
+  if (typeof playInaugurationThen === 'function') playInaugurationThen(startAlmirahOpeningSequence);
+  else startAlmirahOpeningSequence();
 }
 
 function resetGame() {
@@ -1948,11 +2438,13 @@ function restartGame() {
   timerEl.parentElement.style.animation = '';
   resetGame();
   
-  // Re-run 5-second closed almirah preview before opening doors on restart
-  startAlmirahOpeningSequence();
+  // Re-run 5-second closed almirah preview on restart (ceremony already done this session)
+  if (typeof playInaugurationThen === 'function') playInaugurationThen(startAlmirahOpeningSequence);
+  else startAlmirahOpeningSequence();
 }
 
 function closeGame() {
+  if (typeof cancelInauguration === 'function') cancelInauguration();
   if (doorOpenTimeout) clearTimeout(doorOpenTimeout);
   if (doorCountdownInterval) clearInterval(doorCountdownInterval);
   clearInterval(gameState.timerInterval);
@@ -1973,6 +2465,511 @@ document.addEventListener('contextmenu', function(e) {
   if (e.target.closest('.clothing-item')) e.preventDefault();
 });
 </script>
+<script>
+/* ============================================================
+   ✦ ENHANCED MOTION SYSTEM — tilt / glare / parallax / count-up
+   (adds no dependencies; safe if it ever fails to run)
+   ============================================================ */
+(function () {
+  'use strict';
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine = window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine)').matches;
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2f031d64b63e59b',t:'MTc4NzM4NDA2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a31268361d7b59a6',t:'MTc4Nzc0MjgwNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+  /* ---------- 1. Scroll progress bar, navbar shadow, back-to-top ---------- */
+  var bar = document.getElementById('scrollProgress');
+  var nav = document.getElementById('navbar');
+  var toTop = document.getElementById('toTopBtn');
+  function onScroll() {
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - doc.clientHeight;
+    var y = window.pageYOffset || doc.scrollTop || 0;
+    if (bar) bar.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
+    if (nav) { if (y > 30) nav.classList.add('nav-solid'); else nav.classList.remove('nav-solid'); }
+    if (toTop) { if (y > 520) toTop.classList.add('show'); else toTop.classList.remove('show'); }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+  if (toTop) toTop.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  });
+
+  /* ---------- 2. Count-up hero stats ---------- */
+  var counters = [].slice.call(document.querySelectorAll('[data-count-to]'));
+  function animateCount(el) {
+    var to = parseFloat(el.getAttribute('data-count-to')) || 0;
+    var dec = parseInt(el.getAttribute('data-count-decimals') || '0', 10);
+    var pre = el.getAttribute('data-count-prefix') || '';
+    var suf = el.getAttribute('data-count-suffix') || '';
+    if (reduce) { el.textContent = pre + to.toFixed(dec) + suf; return; }
+    var t0 = null, dur = 1400;
+    function step(ts) {
+      if (t0 === null) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      var e = 1 - Math.pow(1 - p, 3);
+      el.textContent = pre + (to * e).toFixed(dec) + suf;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    el.textContent = pre + (0).toFixed(dec) + suf;
+    requestAnimationFrame(step);
+  }
+  if (counters.length && 'IntersectionObserver' in window) {
+    var cio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { animateCount(en.target); cio.unobserve(en.target); }
+      });
+    }, { threshold: .5 });
+    counters.forEach(function (c) { cio.observe(c); });
+  }
+
+  /* ---------- 3. Category stickers on showcase cards ---------- */
+  var stickerMap = {
+    'air-coolers-online': '❄️',
+    'buy-iron-almirah-online': '🗄️',
+    'washing-machine': '🫧',
+    'buy-the-best-led-tv-online': '📺',
+    'buy-mixers-and-juicers-online': '🥤',
+    'sewing-machines-online': '🧵'
+  };
+  [].slice.call(document.querySelectorAll('.product-card')).forEach(function (card) {
+    var wrap = card.querySelector('.product-image-wrap');
+    if (!wrap) return;
+    var m = /\/product-category\/([^\/]+)\//.exec(card.getAttribute('href') || '');
+    var emo = m && stickerMap[m[1]];
+    if (!emo) return;
+    var st = document.createElement('div');
+    st.className = 'card-sticker float';
+    st.setAttribute('aria-hidden', 'true');
+    st.textContent = emo;
+    wrap.appendChild(st);
+  });
+
+  /* ---------- 4. 3D tilt + pointer glare + image parallax ---------- */
+  if (!reduce && fine) {
+    [].slice.call(document.querySelectorAll('.tilt-card')).forEach(function (card) {
+      var inner = card.querySelector(':scope > .tilt-inner');
+      if (!inner) {
+        inner = document.createElement('div');
+        inner.className = 'tilt-inner';
+        while (card.firstChild) inner.appendChild(card.firstChild);
+        card.appendChild(inner);
+      }
+      var glare = document.createElement('div');
+      glare.className = 'tilt-glare';
+      card.appendChild(glare);
+      var req = null, last = null;
+      card.addEventListener('pointermove', function (e) {
+        last = e;
+        if (req) return;
+        req = requestAnimationFrame(function () {
+          req = null;
+          var r = card.getBoundingClientRect();
+          var x = Math.max(0, Math.min(1, (last.clientX - r.left) / r.width));
+          var y = Math.max(0, Math.min(1, (last.clientY - r.top) / r.height));
+          inner.style.transitionDuration = '.06s';
+          inner.style.transform = 'rotateX(' + ((y - .5) * -7).toFixed(2) + 'deg) rotateY(' + ((x - .5) * 10).toFixed(2) + 'deg) translateZ(0)';
+          card.style.setProperty('--gx', (x * 100).toFixed(1) + '%');
+          card.style.setProperty('--gy', (y * 100).toFixed(1) + '%');
+          card.style.setProperty('--px', ((x - .5) * 2).toFixed(3));
+          card.style.setProperty('--py', ((y - .5) * 2).toFixed(3));
+          glare.style.opacity = '1';
+        });
+      });
+      card.addEventListener('pointerleave', function () {
+        inner.style.transitionDuration = '.45s';
+        inner.style.transform = '';
+        glare.style.opacity = '0';
+        card.style.setProperty('--px', '0');
+        card.style.setProperty('--py', '0');
+      });
+    });
+  }
+
+  /* ---------- 5. Cursor spotlight + background-layer parallax ---------- */
+  if (!reduce && fine) {
+    var glow = document.getElementById('cursorGlow');
+    var orbs = document.getElementById('orbLayer');
+    var cloths = document.getElementById('floatingCloths');
+    var gx = window.innerWidth / 2, gy = window.innerHeight / 2, cx = gx, cy = gy, gRaf = null;
+    function gLoop() {
+      gRaf = null;
+      cx += (gx - cx) * .12;
+      cy += (gy - cy) * .12;
+      if (glow) glow.style.transform = 'translate(' + (cx - 210).toFixed(1) + 'px,' + (cy - 210).toFixed(1) + 'px)';
+      if (Math.abs(gx - cx) > .5 || Math.abs(gy - cy) > .5) gRaf = requestAnimationFrame(gLoop);
+    }
+    window.addEventListener('pointermove', function (e) {
+      gx = e.clientX; gy = e.clientY;
+      if (!gRaf) gRaf = requestAnimationFrame(gLoop);
+      var nx = (e.clientX / window.innerWidth - .5), ny = (e.clientY / window.innerHeight - .5);
+      if (orbs) orbs.style.transform = 'translate(' + (nx * 26).toFixed(1) + 'px,' + (ny * 26).toFixed(1) + 'px)';
+      if (cloths) cloths.style.transform = 'translate(' + (nx * -14).toFixed(1) + 'px,' + (ny * -14).toFixed(1) + 'px)';
+    }, { passive: true });
+  }
+
+  /* ---------- 6. Magnetic CTA buttons ---------- */
+  if (!reduce && fine) {
+    [].slice.call(document.querySelectorAll('.mag')).forEach(function (btn) {
+      btn.addEventListener('pointermove', function (e) {
+        var r = btn.getBoundingClientRect();
+        var dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+        var dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+        btn.style.transform = 'translate(' + (dx * 7).toFixed(1) + 'px,' + (dy * 5).toFixed(1) + 'px) scale(1.05)';
+      });
+      btn.addEventListener('pointerleave', function () { btn.style.transform = ''; });
+    });
+  }
+})();
+</script>
+<script>
+/* ============================================================
+   INAUGURATION CEREMONY ENGINE - ribbon cut, applause, petals,
+   dhol + optional WebAudio SFX (no external assets)
+   ============================================================ */
+var INAUG = { running: false, shown: false, always: true, timers: [], sound: true, cb: null, root: null, ac: null };
+try { if (localStorage.getItem('inaugSound') === '0') INAUG.sound = false; } catch (e) {}
+
+function igT(ms, fn) { INAUG.timers.push(setTimeout(fn, ms)); }
+function igClear() { INAUG.timers.forEach(function (t) { clearTimeout(t); }); INAUG.timers = []; }
+function igQ(sel) { return INAUG.root ? INAUG.root.querySelector(sel) : null; }
+function igHost(root) { return root || document.getElementById('inaugOverlay'); }
+
+function igAC() {
+  if (!INAUG.sound) return null;
+  var C = window.AudioContext || window.webkitAudioContext;
+  if (!C) return null;
+  if (!INAUG.ac) { try { INAUG.ac = new C(); } catch (e) { return null; } }
+  try { if (INAUG.ac.state === 'suspended') INAUG.ac.resume(); } catch (e) {}
+  return INAUG.ac;
+}
+function igTone(f0, f1, dur, type, vol, delay) {
+  var c = igAC(); if (!c) return;
+  try {
+    var o = c.createOscillator(), g = c.createGain(), s = c.currentTime + (delay || 0);
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(Math.max(1, f0), s);
+    if (f1) o.frequency.exponentialRampToValueAtTime(Math.max(1, f1), s + dur);
+    g.gain.setValueAtTime(.0001, s);
+    g.gain.exponentialRampToValueAtTime(Math.max(.001, vol || .12), s + .02);
+    g.gain.exponentialRampToValueAtTime(.0001, s + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(s); o.stop(s + dur + .1);
+  } catch (e) {}
+}
+function igNoise(dur, vol, fc, delay) {
+  var c = igAC(); if (!c) return;
+  try {
+    var sr = c.sampleRate, len = Math.max(1, Math.floor(sr * dur));
+    var buf = c.createBuffer(1, len, sr), d = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 1.6);
+    var src = c.createBufferSource(); src.buffer = buf;
+    var f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = fc || 1400; f.Q.value = .9;
+    var g = c.createGain(); g.gain.value = vol || .08;
+    src.connect(f); f.connect(g); g.connect(c.destination);
+    src.start(c.currentTime + (delay || 0));
+  } catch (e) {}
+}
+function igDrum(t0) { igTone(150, 40, .22, 'sine', .3, t0 || 0); igTone(300, 70, .06, 'triangle', .14, t0 || 0); }
+function igSnip() { igNoise(.07, .14, 2600, 0); igTone(2200, 850, .08, 'square', .05, 0); }
+function igChime() { [880, 1108, 1318, 1760].forEach(function (f, i) { igTone(f, f * 1.01, .5, 'triangle', .05, i * .07); }); }
+function igApplause(n, strong) { for (var i = 0; i < n; i++) igNoise(.05, strong ? .1 : .07, 900 + Math.random() * 2200, Math.random() * 1.6); }
+
+function igPetals(count, root) {
+  var host = igHost(root); if (!host) return;
+  var box = host.querySelector('.petal-box'); if (!box) return;
+  var glyphs = ['🌸', '🌼', '🌺', '✨', '🌵️'];
+  for (var i = 0; i < count; i++) {
+    var p = document.createElement('span');
+    p.className = 'petal';
+    p.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+    p.style.left = (Math.random() * 100).toFixed(2) + '%';
+    p.style.fontSize = Math.round(13 + Math.random() * 15) + 'px';
+    p.style.setProperty('--dx', Math.round(Math.random() * 180 - 90) + 'px');
+    p.style.animationDuration = (2.8 + Math.random() * 2.2).toFixed(2) + 's';
+    p.style.animationDelay = (Math.random() * 2).toFixed(2) + 's';
+    box.appendChild(p);
+  }
+}
+function igBubbles(setName, root) {
+  var host = igHost(root); if (!host) return;
+  var box = host.querySelector('.bubbles'); if (!box) return;
+  box.innerHTML = '';
+  var setA = ['वाह! वाह! 👏', 'Shabaash! 🎉', 'बहुत बड़िया! 🌸', 'What a launch! ✨', 'MODISH! 🔥'];
+  var setB = ['So elegant! ✨', 'Grand success! 🏆', 'Shop the launch! 🛒', 'शुभ आरंभ! 🌺', 'Clap for Modish! 👏'];
+  var texts = (setName === 'B') ? setB : setA;
+  var spots = [[6, 26], [22, 10], [44, 30], [66, 8], [84, 24]];
+  texts.forEach(function (t, i) {
+    var b = document.createElement('span');
+    b.textContent = t;
+    b.style.left = spots[i][0] + '%';
+    b.style.bottom = spots[i][1] + '%';
+    b.style.animationDelay = (.1 + i * .14).toFixed(2) + 's';
+    box.appendChild(b);
+  });
+}
+
+function playInaugurationThen(cb) {
+  if (INAUG.running) return;
+  if (INAUG.shown && !INAUG.always) { cb(); return; }
+  var root = document.getElementById('inaugOverlay');
+  if (!root || typeof cb !== 'function') { if (cb) cb(); return; }
+  INAUG.root = root; INAUG.cb = cb; INAUG.running = true;
+  INAUG.gen = (INAUG.gen || 0) + 1;
+  var myGen = INAUG.gen;
+  root.setAttribute('aria-hidden', 'false');
+  root.classList.remove('out', 'guest-in', 'cutting', 'cut', 'celebrate');
+  root.classList.add('active');
+  requestAnimationFrame(function () { root.classList.add('in'); });
+  var snd = document.getElementById('soundBtn');
+  if (snd) snd.textContent = INAUG.sound ? '🔊' : '🔇';
+  var skipL = document.getElementById('inaugSkip');
+  if (skipL && !skipL.dataset.preview) skipL.innerHTML = 'Skip to game ➜';
+  igPetals(40);
+  /* dhol roll intro */
+  igT(400, function () { igDrum(0); igDrum(.42); });
+  /* chief guest strides in */
+  igT(1200, function () { root.classList.add('guest-in'); igDrum(0); });
+  igT(2100, function () { igApplause(9, false); });
+  igT(2650, function () { igDrum(0); igDrum(.3); });
+  /* scissors approach - slow and dramatic (1.55s, blade opens before the snip) */
+  igT(2900, function () { root.classList.add('cutting'); });
+  /* the cut @4.45s */
+  igT(4450, function () {
+    root.classList.add('cut');
+    igSnip(); igPetals(26); igBubbles('A'); igBalloons(6);
+    igChime(); igApplause(28, true);
+    igDrum(0); igDrum(.26); igDrum(.52);
+    igT(90, function () {
+      root.classList.add('celebrate');
+      if (typeof launchConfetti === 'function') launchConfetti();
+      igFlashLoop(myGen);
+    });
+  });
+  /* sustained celebration waves */
+  igT(6300, function () { igBalloons(4); igApplause(14, true); igDrum(0); });
+  igT(7000, function () { igBubbles('B'); });
+  igT(7600, function () { igPetals(20); if (typeof launchConfetti === 'function') launchConfetti(); igDrum(0); igDrum(.28); igDrum(.56); });
+  igT(8800, function () { igBalloons(5); igApplause(10, true); });
+  igT(10000, function () { endInauguration(true); });
+}
+function endInauguration(cont) {
+  if (!INAUG.running) return;
+  INAUG.running = false; INAUG.shown = true;
+  igClear();
+  var root = INAUG.root;
+  var cb = INAUG.cb; INAUG.cb = null;
+  var myGen = INAUG.gen;
+  if (root) {
+    root.classList.add('out');
+    setTimeout(function () {
+      if (INAUG.gen !== myGen) return; /* a new ceremony took over - leave it alone */
+      root.classList.remove('active', 'in', 'out', 'guest-in', 'cutting', 'cut', 'celebrate');
+      root.setAttribute('aria-hidden', 'true');
+      var box = root.querySelector('.petal-box'); if (box) box.innerHTML = '';
+      var bub = root.querySelector('.bubbles'); if (bub) bub.innerHTML = '';
+      var fl = root.querySelectorAll('.flash'); for (var fi = 0; fi < fl.length; fi++) fl[fi].remove();
+      if (cont && cb) cb();
+    }, 520);
+  } else if (cont && cb) cb();
+}
+function skipInauguration() { endInauguration(true); }
+function cancelInauguration() { endInauguration(false); }
+
+(function () {
+  var s = document.getElementById('inaugSkip');
+  if (s) s.addEventListener('click', skipInauguration);
+  var b = document.getElementById('soundBtn');
+  if (b) b.addEventListener('click', function (ev) {
+    ev.stopPropagation();
+    INAUG.sound = !INAUG.sound;
+    b.textContent = INAUG.sound ? '🔊' : '🔇';
+    try { localStorage.setItem('inaugSound', INAUG.sound ? '1' : '0'); } catch (e) {}
+    if (INAUG.sound) igChime();
+  });
+})();
+/* ---------- crowd extras: MODISH placards + phone cameras ---------- */
+function ceremonyCrowd(root) {
+  if (!root) return;
+  var front = root.querySelectorAll('.aud-row.front .spec');
+  if (!front.length) return;
+  var n = front.length;
+  var signAt = n > 9 ? [1, 6, 11] : [1, 4];
+  var camAt = n > 9 ? [3, 9] : [2];
+  signAt.forEach(function (ix) { var s = front[ix]; if (!s) return; var h = s.querySelector('.hands'); if (!h) return; h.className = 'hands sign'; h.textContent = 'MODISH'; });
+  camAt.forEach(function (ix) { var s = front[ix]; if (!s) return; var h = s.querySelector('.hands'); if (!h || h.classList.contains('sign')) return; h.textContent = '📸'; h.classList.add('cam'); });
+}
+/* ---------- balloon release ---------- */
+function igBalloons(count, root) {
+  var host = igHost(root); if (!host) return;
+  var box = host.querySelector('.petal-box') || host;
+  for (var i = 0; i < count; i++) {
+    var g = document.createElement('span');
+    g.className = 'balloon';
+    g.textContent = '🎈';
+    g.style.left = (12 + Math.random() * 76).toFixed(1) + '%';
+    g.style.fontSize = Math.round(18 + Math.random() * 14) + 'px';
+    g.style.animationDuration = (3.6 + Math.random() * 2.4).toFixed(2) + 's';
+    g.style.animationDelay = (Math.random() * .8).toFixed(2) + 's';
+    g.style.setProperty('--bdx', Math.round(Math.random() * 120 - 60) + 'px');
+    box.appendChild(g);
+    (function (el) { setTimeout(function () { if (el.parentNode) el.remove(); }, 7600); })(g);
+  }
+}
+/* ---------- photographers' flashes (self-rescheduling while ceremony runs) ---------- */
+function igFlashLoop(myGen) {
+  if (!INAUG.running || INAUG.gen !== myGen) return;
+  if (INAUG.root) {
+    var f = document.createElement('span');
+    f.className = 'flash';
+    f.style.left = (6 + Math.random() * 88).toFixed(1) + '%';
+    f.style.bottom = (10 + Math.random() * 28).toFixed(1) + '%';
+    INAUG.root.appendChild(f);
+    setTimeout(function () { if (f.parentNode) f.remove(); }, 430);
+  }
+  igT(360 + Math.random() * 560, function () { igFlashLoop(myGen); });
+}
+/* ---------- full-screen inauguration preview launched from the floating window ---------- */
+function openCeremonyPreview() {
+  var g = document.getElementById('gameOverlay');
+  if (INAUG.running || (g && g.classList.contains('active'))) return;
+  document.body.style.overflow = 'hidden';
+  var sk = document.getElementById('inaugSkip');
+  if (sk) { sk.textContent = 'Close ✕'; sk.dataset.preview = '1'; }
+  playInaugurationThen(function () {
+    document.body.style.overflow = '';
+    if (sk) { sk.innerHTML = 'Skip to game ➜'; delete sk.dataset.preview; }
+  });
+}
+
+/* ---------- landing-page LIVE teaser: loops the real ceremony, small ---------- */
+function initMiniInaug() {
+  if (document.getElementById('miniInaug') || !document.getElementById('inaugOverlay')) return;
+  try { localStorage.removeItem('miniInaugHidden'); } catch (e) {}
+  var wrap = document.createElement('div');
+  wrap.id = 'miniInaug';
+  wrap.setAttribute('role', 'button');
+  wrap.setAttribute('tabindex', '0');
+  wrap.setAttribute('aria-label', 'Live inauguration preview - click to play');
+  wrap.innerHTML = '<div id="miniHead"><span class="dot"></span>LIVE - GRAND INAUGURATION<button id="miniClose" aria-label="Hide teaser">✕</button></div><div id="miniStage"></div><div id="miniFoot">The almirah game is live - tap to play! 🎮</div>';
+  var stage = wrap.querySelector('#miniStage');
+  var clone = document.getElementById('inaugOverlay').cloneNode(true);
+  clone.removeAttribute('id');
+  clone.setAttribute('aria-hidden', 'true');
+  var btns = clone.querySelectorAll('.c-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].parentNode.removeChild(btns[i]);
+  var frow = clone.querySelector('.aud-row.front');
+  if (frow) { var sp = frow.querySelectorAll('.spec'); for (var j = 9; j < sp.length; j++) sp[j].parentNode.removeChild(sp[j]); }
+  var brow = clone.querySelector('.aud-row.back');
+  if (brow && brow.parentNode) brow.parentNode.removeChild(brow);
+  clone.className = 'ceremony mini';
+  stage.appendChild(clone);
+  document.body.appendChild(wrap);
+  ceremonyCrowd(clone);
+  var miniTimers = [];
+  var running = false;
+  var pending = false;
+  function mT(ms, fn) { miniTimers.push(setTimeout(fn, ms)); }
+  function miniConfetti() {
+    var box = clone.querySelector('.petal-box'); if (!box) return;
+    var cols = ['#2b82ad', '#68bfd4', '#d7a53b', '#efaa73', '#4ba988', '#e63946'];
+    for (var k = 0; k < 24; k++) {
+      (function (idx) {
+        var d = document.createElement('span');
+        d.style.cssText = 'position:absolute;left:' + (30 + Math.random() * 40) + '%;top:42%;width:5px;height:5px;border-radius:1px;background:' + cols[idx % 6] + ';pointer-events:none;';
+        box.appendChild(d);
+        var ang = Math.random() * Math.PI * 2, v = 30 + Math.random() * 55;
+        d.animate([
+          { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+          { transform: 'translate(' + (Math.cos(ang) * v).toFixed(0) + 'px,' + (Math.sin(ang) * v - 40).toFixed(0) + 'px) rotate(300deg)', opacity: 0 }
+        ], { duration: 750 + Math.random() * 500, easing: 'cubic-bezier(.2,.6,.3,1)' });
+        setTimeout(function () { if (d.parentNode) d.remove(); }, 1300);
+      })(k);
+    }
+  }
+  function cycle() {
+    if (running) return; running = true;
+    clone.classList.add('active');
+    requestAnimationFrame(function () { clone.classList.add('in'); });
+    igPetals(12, clone);
+    mT(700, function () { clone.classList.add('guest-in'); });
+    mT(1500, function () { clone.classList.add('cutting'); });
+    mT(3150, function () {
+      clone.classList.add('cut', 'celebrate');
+      miniConfetti(); igBalloons(3, clone); igBubbles('A', clone);
+      mT(1500, function () { igBalloons(2, clone); igBubbles('B', clone); });
+    });
+    mT(6400, function () {
+      clone.classList.remove('active', 'in', 'guest-in', 'cutting', 'cut', 'celebrate');
+      var pb = clone.querySelector('.petal-box'); if (pb) pb.innerHTML = '';
+      var bb = clone.querySelector('.bubbles'); if (bb) bb.innerHTML = '';
+      miniTimers.forEach(clearTimeout); miniTimers = [];
+      running = false;
+      mT(600, function () { if (!document.hidden) cycle(); else pending = true; });
+    });
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && pending && !running) { pending = false; cycle(); }
+  });
+  /* ---- floating window: drag anywhere, edge-clamped, position remembered ---- */
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem('miniInaugPos') || 'null'); } catch (e) {}
+  function clampPos(x, y) {
+    var w = wrap.offsetWidth, h = wrap.offsetHeight;
+    return { x: Math.max(6, Math.min(window.innerWidth - w - 6, x)), y: Math.max(6, Math.min(window.innerHeight - h - 6, y)) };
+  }
+  function place(x, y) {
+    var p = clampPos(x, y);
+    wrap.style.right = 'auto'; wrap.style.bottom = 'auto';
+    wrap.style.left = p.x + 'px'; wrap.style.top = p.y + 'px';
+  }
+  function defaultPos() {
+    var w = wrap.offsetWidth, h = wrap.offsetHeight;
+    if (window.innerWidth <= 640) return { x: 10, y: window.innerHeight - h - 16 };
+    return { x: window.innerWidth - w - 20, y: 88 };
+  }
+  var dpos = defaultPos();
+  place(saved ? saved.x : dpos.x, saved ? saved.y : dpos.y);
+  wrap.title = 'Drag me anywhere - click for the full-screen inauguration';
+  window.addEventListener('resize', function () { place(wrap.offsetLeft, wrap.offsetTop); });
+  var drag = null;
+  wrap.addEventListener('pointerdown', function (e) {
+    if (e.target.closest && e.target.closest('#miniClose')) return;
+    drag = { sx: e.clientX, sy: e.clientY, ox: wrap.offsetLeft, oy: wrap.offsetTop, moved: false };
+    if (wrap.setPointerCapture) { try { wrap.setPointerCapture(e.pointerId); } catch (err) {} }
+    wrap.classList.add('dragging');
+  });
+  wrap.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    var dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+    if (!drag.moved && (Math.abs(dx) + Math.abs(dy)) < 7) return;
+    drag.moved = true;
+    place(drag.ox + dx, drag.oy + dy);
+  });
+  function dragEnd() {
+    if (!drag) return;
+    var moved = drag.moved; drag = null;
+    wrap.classList.remove('dragging');
+    if (moved) {
+      try { localStorage.setItem('miniInaugPos', JSON.stringify({ x: wrap.offsetLeft, y: wrap.offsetTop })); } catch (err) {}
+    } else {
+      openCeremonyPreview();  /* a plain click = full-screen inauguration */
+    }
+  }
+  wrap.addEventListener('pointerup', dragEnd);
+  wrap.addEventListener('pointercancel', function () { if (drag) { drag = null; wrap.classList.remove('dragging'); } });
+  wrap.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCeremonyPreview(); } });
+  wrap.querySelector('#miniClose').addEventListener('click', function (e) {
+    e.stopPropagation();
+    var mini = wrap.classList.toggle('mini-mini');
+    this.textContent = mini ? '▴' : '▾';
+    this.title = mini ? 'Expand' : 'Minimise';
+    requestAnimationFrame(function () { place(wrap.offsetLeft, wrap.offsetTop); try { localStorage.setItem('miniInaugPos', JSON.stringify({ x: wrap.offsetLeft, y: wrap.offsetTop })); } catch (err) {} });
+  });
+  if (wrap.classList.contains('mini-mini')) { var cb0 = wrap.querySelector('#miniClose'); if (cb0) cb0.textContent = '▴'; }
+  if (!document.hidden) cycle(); else pending = true;
+}
+ceremonyCrowd(document.getElementById('inaugOverlay'));
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMiniInaug); else initMiniInaug();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a39d47e3cf92d9c0',t:'MTc4OTE5OTAwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
