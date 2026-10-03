@@ -2465,7 +2465,7 @@ function claimPromo() {
       gameState.saved = true;
       var tabText = res.sheetName ? ' in tab "' + res.sheetName + '"' : '';
       var rowText = res.row ? ' (row #' + res.row + ')' : '';
-      statusEl.textContent = '✅ Saved to Google Sheets' + tabText + rowText + '.';
+      statusEl.textContent = '✅ Your Data has been saved.';
       document.getElementById('playerForm').classList.add('hidden');
     } else {
       statusEl.textContent = '⚠️ Save not confirmed. ' +
