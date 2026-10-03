@@ -1329,7 +1329,7 @@
           <span>You have already played with this number! Please enter the access password to play again.</span>
         </div>
         <label class="block text-xs font-semibold text-slate-600 mb-1">ACCESS PASSWORD</label>
-        <input type="password" id="accessPasswordInput" placeholder="Enter password (e.g. Modish2026!)"
+        <input type="password" id="accessPasswordInput" placeholder="Enter access password"
           class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-yellow-400 transition">
       </div>
 
@@ -1574,7 +1574,7 @@
             class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-pink-400 transition">
         </div>
         <p id="formError" class="text-red-400 text-xs mt-2 hidden"></p>
-        <button onclick="claimPromo()" class="btn-shine w-full py-3.5 rounded-xl font-bold text-base mt-3 transition-all hover:scale-[1.02] shadow-lg" style="background:linear-gradient(135deg,#4ba988,#4aa9c3);">
+        <button id="claimPromoBtn" onclick="claimPromo()" class="btn-shine w-full py-3.5 rounded-xl font-bold text-base mt-3 transition-all hover:scale-[1.02] shadow-lg" style="background:linear-gradient(135deg,#4ba988,#4aa9c3);">
           <iconify-icon icon="mdi:ticket-confirmation" class="inline mr-2"></iconify-icon> Claim Promo Code
         </button>
       </div>
@@ -1859,6 +1859,32 @@ generateQR();
 // ===== VERIFICATION & PASSWORD FLOW (One play per player, no refresh before password input) =====
 var currentVerifiedPhone = '';
 
+function hasAppsScriptBackend() {
+  return typeof google !== 'undefined' && google.script && google.script.run;
+}
+
+// Vercel serves this page and its /api function from the same origin, so no
+// browser-exposed Google credentials or cross-origin request are needed.
+function callVercelApi(action, payload) {
+  var requestBody = Object.assign({ action: action }, payload || {});
+  return fetch('/api/game', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(requestBody)
+  }).then(function(response) {
+    return response.text().then(function(raw) {
+      var result = null;
+      try { result = raw ? JSON.parse(raw) : null; } catch (e) {}
+      if (!response.ok || !result || result.success === false) {
+        var message = result && result.message ? result.message :
+          'Vercel API returned HTTP ' + response.status + '. Confirm that /api/game.js is deployed.';
+        throw new Error(message);
+      }
+      return result;
+    });
+  });
+}
+
 function handlePlayClick() {
   // Show verification modal instead of refreshing or loading immediately
   document.getElementById('verifyModal').classList.remove('hidden');
@@ -1887,80 +1913,73 @@ function submitVerification() {
   }
   errEl.classList.add('hidden');
 
-  // If password container is visible, verify password
   if (!passContainer.classList.contains('hidden')) {
     if (!password) {
       errEl.textContent = 'Please enter the access password.';
       errEl.classList.remove('hidden');
       return;
     }
-    // Verify password via backend
-    if (typeof google !== 'undefined' && google.script && google.script.run) {
-      google.script.run
-        .withSuccessHandler(function(isValid) {
-          if (isValid) {
-            currentVerifiedPhone = phone;
-            closeVerifyModal();
-            startGame();
-          } else {
-            errEl.textContent = 'Incorrect password. Please try again.';
-            errEl.classList.remove('hidden');
-          }
-        })
-        .withFailureHandler(function() {
-          // Fallback check
-          if (password === 'Modish2026!') {
-            currentVerifiedPhone = phone;
-            closeVerifyModal();
-            startGame();
-          } else {
-            errEl.textContent = 'Incorrect password.';
-            errEl.classList.remove('hidden');
-          }
-        })
-        .verifyPassword(password);
-    } else {
-      // Local fallback for standalone testing
-      if (password === 'Modish2026!') {
+
+    function handlePasswordResult(isValid) {
+      if (isValid) {
         currentVerifiedPhone = phone;
         closeVerifyModal();
         startGame();
       } else {
-        errEl.textContent = 'Incorrect password.';
+        errEl.textContent = 'Incorrect password. Please try again.';
         errEl.classList.remove('hidden');
       }
+    }
+    function handlePasswordError(error) {
+      errEl.textContent = 'Could not verify the password with the server. ' +
+        (error && error.message ? error.message : 'Please try again.');
+      errEl.classList.remove('hidden');
+    }
+
+    if (hasAppsScriptBackend()) {
+      google.script.run
+        .withSuccessHandler(handlePasswordResult)
+        .withFailureHandler(handlePasswordError)
+        .verifyPassword(password);
+    } else {
+      callVercelApi('verifyPassword', { password: password })
+        .then(function(result) { handlePasswordResult(result.valid === true); })
+        .catch(handlePasswordError);
     }
     return;
   }
 
-  // Check if player has already played using backend
-  if (typeof google !== 'undefined' && google.script && google.script.run) {
+  function handlePlayerCheck(res) {
+    if (!res) {
+      errEl.textContent = 'The server returned no player-check result. Please retry.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    if (res.hasPlayed) {
+      passContainer.classList.remove('hidden');
+      errEl.textContent = 'This number has already played on ' + (res.lastPlayDate || 'a previous date') + '. Password required.';
+      errEl.classList.remove('hidden');
+    } else {
+      currentVerifiedPhone = phone;
+      closeVerifyModal();
+      startGame();
+    }
+  }
+  function handlePlayerCheckError(error) {
+    errEl.textContent = 'Could not check this number with the server, so the game was not started. ' +
+      (error && error.message ? error.message : 'Please retry.');
+    errEl.classList.remove('hidden');
+  }
+
+  if (hasAppsScriptBackend()) {
     google.script.run
-      .withSuccessHandler(function(res) {
-        if (res.hasPlayed) {
-          // Already played! Prompt for password WITHOUT refreshing the page / link
-          passContainer.classList.remove('hidden');
-          errEl.textContent = 'This number has already played on ' + res.lastPlayDate + '. Password required.';
-          errEl.classList.remove('hidden');
-        } else {
-          // First time player! Proceed directly to game
-          currentVerifiedPhone = phone;
-          closeVerifyModal();
-          startGame();
-        }
-      })
-      .withFailureHandler(function() {
-        // Fallback
-        currentVerifiedPhone = phone;
-        closeVerifyModal();
-        startGame();
-      })
+      .withSuccessHandler(handlePlayerCheck)
+      .withFailureHandler(handlePlayerCheckError)
       .checkPlayerPlayed(phone);
   } else {
-    // Standalone fallback
-    currentVerifiedPhone = phone;
-    closeVerifyModal();
-    startGame();
+    callVercelApi('checkPlayerPlayed', { phone: phone })
+      .then(handlePlayerCheck)
+      .catch(handlePlayerCheckError);
   }
 }
 
@@ -1987,7 +2006,10 @@ var gameState = {
   currentPromoCode: '',
   currentDiscountText: '',
   stars: 0,
-  result: ''
+  result: '',
+  requestId: '',
+  saving: false,
+  saved: false
 };
 
 var doorOpenTimeout = null;
@@ -2071,7 +2093,10 @@ function resetGame() {
     currentPromoCode: '',
     currentDiscountText: '',
     stars: 0,
-    result: ''
+    result: '',
+    requestId: createPlayRequestId(),
+    saving: false,
+    saved: false
   };
 
   document.querySelectorAll('.shelf-items').forEach(function(s) { s.innerHTML = ''; });
@@ -2379,11 +2404,18 @@ function generatePromoCode() {
   return 'MODISH-' + part(4) + '-' + part(4);
 }
 
+function createPlayRequestId() {
+  return 'gp-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
+}
+
 function claimPromo() {
   var name = document.getElementById('winPlayerName').value.trim();
   var email = document.getElementById('winPlayerEmail').value.trim();
   var errEl = document.getElementById('formError');
+  var statusEl = document.getElementById('saveStatus');
+  var claimBtn = document.getElementById('claimPromoBtn');
 
+  if (gameState.saving || gameState.saved) return;
   if (!name) {
     errEl.textContent = 'Please enter your name.';
     errEl.classList.remove('hidden');
@@ -2392,6 +2424,7 @@ function claimPromo() {
   errEl.classList.add('hidden');
 
   var data = {
+    requestId: gameState.requestId || (gameState.requestId = createPlayRequestId()),
     playerName: name,
     phone: currentVerifiedPhone || 'Unknown',
     email: email,
@@ -2405,36 +2438,57 @@ function claimPromo() {
     discountText: gameState.currentDiscountText
   };
 
-  var statusEl = document.getElementById('saveStatus');
-  statusEl.textContent = '⏳ Saving your data to Google Sheet...';
-
-  if (typeof google !== 'undefined' && google.script && google.script.run) {
-    google.script.run
-      .withSuccessHandler(function(res) {
-        if (res.success) {
-          statusEl.textContent = '✅ ' + res.message + ' (Row #' + res.row + ')';
-        } else {
-          statusEl.textContent = '⚠️ ' + res.message;
-        }
-        document.getElementById('playerForm').classList.add('hidden');
-        document.getElementById('promoSection').classList.remove('hidden');
-        document.getElementById('promoCode').textContent = gameState.currentPromoCode;
-        document.getElementById('promoDiscount').textContent = gameState.currentDiscountText;
-      })
-      .withFailureHandler(function(err) {
-        statusEl.textContent = '⚠️ Saved locally.';
-        document.getElementById('playerForm').classList.add('hidden');
-        document.getElementById('promoSection').classList.remove('hidden');
-        document.getElementById('promoCode').textContent = gameState.currentPromoCode;
-        document.getElementById('promoDiscount').textContent = gameState.currentDiscountText;
-      })
-      .saveGamePlay(data);
-  } else {
-    statusEl.textContent = '✅ Saved successfully!';
-    document.getElementById('playerForm').classList.add('hidden');
+  function showPromo() {
     document.getElementById('promoSection').classList.remove('hidden');
     document.getElementById('promoCode').textContent = gameState.currentPromoCode;
     document.getElementById('promoDiscount').textContent = gameState.currentDiscountText;
+  }
+
+  gameState.saving = true;
+  var originalButtonHtml = claimBtn ? claimBtn.innerHTML : '';
+  if (claimBtn) {
+    claimBtn.disabled = true;
+    claimBtn.textContent = 'Saving...';
+  }
+  statusEl.textContent = '⏳ Saving your details to Google Sheets...';
+
+  function finishRequest() {
+    gameState.saving = false;
+    if (claimBtn) {
+      claimBtn.disabled = false;
+      claimBtn.innerHTML = originalButtonHtml;
+    }
+  }
+  function handleSaveSuccess(res) {
+    finishRequest();
+    if (res && res.success === true) {
+      gameState.saved = true;
+      var tabText = res.sheetName ? ' in tab "' + res.sheetName + '"' : '';
+      var rowText = res.row ? ' (row #' + res.row + ')' : '';
+      statusEl.textContent = '✅ Saved to Google Sheets' + tabText + rowText + '.';
+      document.getElementById('playerForm').classList.add('hidden');
+    } else {
+      statusEl.textContent = '⚠️ Save not confirmed. ' +
+        (res && res.message ? res.message : 'Please check the server and retry.');
+    }
+    showPromo();
+  }
+  function handleSaveError(error) {
+    finishRequest();
+    statusEl.textContent = '⚠️ Could not save to Google Sheets: ' +
+      (error && error.message ? error.message : 'Unknown server error') + ' Please retry.';
+    showPromo();
+  }
+
+  if (hasAppsScriptBackend()) {
+    google.script.run
+      .withSuccessHandler(handleSaveSuccess)
+      .withFailureHandler(handleSaveError)
+      .saveGamePlay(data);
+  } else {
+    callVercelApi('saveGamePlay', { data: data })
+      .then(handleSaveSuccess)
+      .catch(handleSaveError);
   }
 }
 
